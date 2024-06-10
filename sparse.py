@@ -1,5 +1,14 @@
 import numpy as np
-import math as math
+import math as math    
+
+import sys as sys
+import os
+
+cwd = os.getcwd()
+print('Current working directory: ', cwd)
+
+drawing_subdirectory = os.path.join(cwd, 'Drawing')
+sys.path.append(drawing_subdirectory)
 
 import Drawing.drawing as drawing
 

@@ -4,6 +4,8 @@ import matplotlib.path as path
 import numpy as np
 import math as math
 
+import arrows.arrows as arrows
+
 class Drawing:
     def __init__(self, diagram_width = 20.0, diagram_height = 4.0, show_axes = False):
         self.offset = 0.0
@@ -18,33 +20,6 @@ class Drawing:
             self.ax.axis('off')
 
 
-    def __Draw_Triangle_Arrowhead(self, x0, y0, xf, yf, color, side_length = 0.2):
-        dy = yf - y0
-        dx = xf - x0
-        theta = 0.0
-
-        # Prevent division by dy=0 errors
-        if dy == 0:
-            if dx < 0:
-                theta = math.radians(90)
-            if dx > 0:
-                theta = math.radians(-90)
-        else:
-            theta = math.atan(dx/dy)
-
-        # Calculate arrowhead vertices using trig
-        vertices = np.array([(x0, y0),                                                                                  # v0
-                             (x0 + side_length/2. * math.cos(theta), y0 - side_length/2. * math.sin(theta)),            # v1
-                             (xf, yf), (x0 - side_length/2. * math.cos(theta), y0 + side_length/2. * math.sin(theta)),  # v2
-                             (x0, y0)])                                                                                 # v3
-
-        # MatPlotLib "Path codes" to define straight lines
-        codes = np.array([1, 2, 2, 2, 2])
-        _path = path.Path(vertices, codes)
-
-        # Create arrowhead patch
-        path_patch = patches.PathPatch(_path, linewidth=1.5, facecolor = color, antialiased=True)
-        self.ax.add_patch(path_patch)
 
     def Draw_Vertical_Arrow(self, x0, y0, xf, yf, color, arrow_side_length = 0.2, dashed = False):
         linestyle_ = '-'
@@ -76,37 +51,9 @@ class Drawing:
         self.__Draw_Triangle_Arrowhead(x0, bot_arrow_y0, x0, y0, color, arrow_side_length)
 
     def Draw_Diagonal_Arrow(self, x0, y0, xf, yf, interior_padding, color, arrow_side_length = 0.2, dashed = False):
-        linestyle_ = '-'
-        if dashed:
-            linestyle_ = '--'
+        arrow = arrows.DiagonalArrow(x0, y0, xf, yf)
+        arrow.Draw(self.ax)
 
-        # Used for shortening curve by arrowhead length
-        # This breaks when the bezier curve is defined at an angle (needs trig fix)
-        arrow_dy = math.cos(math.radians(30)) * arrow_side_length
-        top_arrow_y0 = yf - arrow_dy
-        bot_arrow_y0 = y0 + arrow_dy
-
-        # Really just control points -> Rename
-        # Can be rotation generalized -> See written diagrams
-        # (Will use x_padded_0 and x_padded_f coordinates in non-vertical case)
-        y_padded_0 = bot_arrow_y0 + interior_padding
-        y_padded_f = top_arrow_y0 - interior_padding
-        
-        # Builds a cubic bezier curve for the arrow path
-        # Should be split into its own function (Draw_Cubic_Bezier)
-        vertices = np.array([(x0, bot_arrow_y0), (x0, y_padded_0), (xf, y_padded_f), (xf, top_arrow_y0)])
-        codes = np.array([1, 4, 4, 4])
-        _path = path.Path(vertices, codes)
-
-        # Increased linewidth to 1.8 for these arrow paths because it looks better
-        path_patch = patches.PathPatch(_path, linewidth=1.8, fill=False, antialiased=True, linestyle = linestyle_)
-        self.ax.add_patch(path_patch)
-
-        # Build Upward Arrowhead
-        self.__Draw_Triangle_Arrowhead(xf, top_arrow_y0, xf, yf, color, arrow_side_length)
-
-        # Build Downward Arrowhead:
-        self.__Draw_Triangle_Arrowhead(x0, bot_arrow_y0, x0, y0, color, arrow_side_length)
 
     def Draw_Reconnecting_Arrow(self, x0, y0, xf, yf, interior_padding, color = 'tomato', arrow_side_length = 0.2):
         # Used for shortening curve by arrowhead length
