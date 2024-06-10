@@ -43,25 +43,28 @@ class ArrowBase:
         path_patch = patches.PathPatch(_path, linewidth=1.5, facecolor = color, antialiased=True)
         ax.add_patch(path_patch)
 
-    def Draw(self, ax, arrowstyle):
+    # arrowbody - The curve or line of the arrow. Requires a method Shorten(initial_amount, final_amount)
+    def Draw(self, ax, arrowbody, arrowstyle):
         # Height delta of a single arrowhead
         arrowhead_dy = math.cos(math.radians(30)) * self.arrowhead_size
         top_arrow_y0 = self.yf - arrowhead_dy
         bot_arrow_y0 = self.y0 + arrowhead_dy
 
         if arrowstyle == '<->':
+            arrowbody.Shorten(arrowhead_dy, arrowhead_dy)
             self.__Draw_Triangle_Arrowhead(ax, self.xf, top_arrow_y0, self.xf, self.yf, self.color, arrowhead_dy)
             self.__Draw_Triangle_Arrowhead(ax, self.x0, bot_arrow_y0, self.x0, self.y0, self.color, arrowhead_dy)
+        if arrowstyle == '<-':
+            arrowbody.Shorten(arrowhead_dy, 0)
+            self.__Draw_Triangle_Arrowhead(ax, self.x0, bot_arrow_y0, self.x0, self.y0, self.color, arrowhead_dy)
+            pass
+
 
 class DiagonalArrow(ArrowBase):
     def __init__(self, x0, y0, xf, yf, color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
-        super().__init__(x0, y0, xf, yf)
+        super().__init__(x0, y0, xf, yf, arrowstyle = arrowstyle)
         self.cubic_bezier = bezier.Bezier(x0, y0, xf, yf)
-        
-        # Height delta of a single arrowhead
-        arrowhead_dy = math.cos(math.radians(30)) * arrowhead_size
-        self.cubic_bezier.Shorten(arrowhead_dy, arrowhead_dy)
 
     def Draw(self, ax):
-        super().Draw(ax, '<->')
+        super().Draw(ax, self.cubic_bezier, self.arrowstyle)
         self.cubic_bezier.Draw(ax)
