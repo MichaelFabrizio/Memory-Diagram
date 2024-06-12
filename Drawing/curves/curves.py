@@ -3,12 +3,16 @@ import matplotlib.path as path
 import numpy as np
 import math as math
 
-class Bezier:
+class Curve:
     def __init__(self, x0, y0, xf, yf):
         self.x0 = x0
         self.y0 = y0
         self.xf = xf
         self.yf = yf
+
+class Bezier(Curve):
+    def __init__(self, x0, y0, xf, yf):
+        super().__init__(x0, y0, xf, yf)
 
         # Eventually turn these into __init__ parameters
         self.orientation = math.radians(90) # Does nothing right now
@@ -32,6 +36,25 @@ class Bezier:
                              (self.xf, self.yf)])                   # End coordinate
 
         codes = np.array([1, 4, 4, 4])
+        _path = path.Path(vertices, codes)
+        
+        # Increased linewidth to 1.8 for these arrow paths because it looks better
+        path_patch = patches.PathPatch(_path, linewidth=1.8, fill=False, antialiased=True, linestyle = '-')
+        ax.add_patch(path_patch)
+
+class Line(Curve):
+    def __init__(self, x0, y0, xf, yf):
+        super().__init__(x0, y0, xf, yf)
+
+    def Shorten(self, initial, final):
+        self.y0 = self.y0 + initial
+        self.yf = self.yf - final
+
+    def Draw(self, ax):
+        vertices = np.array([(self.x0, self.y0),                    # Start coordinate
+                             (self.xf, self.yf)])                   # End coordinate
+
+        codes = np.array([1, 2])
         _path = path.Path(vertices, codes)
         
         # Increased linewidth to 1.8 for these arrow paths because it looks better

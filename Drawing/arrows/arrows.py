@@ -1,7 +1,7 @@
 import matplotlib.patches as patches
 import matplotlib.path as path
 import math as math
-import bezier.bezier as bezier
+import curves.curves as curves
 import numpy as np
 
 class ArrowBase:
@@ -63,8 +63,17 @@ class ArrowBase:
 class DiagonalArrow(ArrowBase):
     def __init__(self, x0, y0, xf, yf, color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
         super().__init__(x0, y0, xf, yf, arrowstyle = arrowstyle)
-        self.cubic_bezier = bezier.Bezier(x0, y0, xf, yf)
+        self.cubic_bezier = curves.Bezier(x0, y0, xf, yf)
 
     def Draw(self, ax):
         super().Draw(ax, self.cubic_bezier, self.arrowstyle)
         self.cubic_bezier.Draw(ax)
+
+class VerticalArrow(ArrowBase):
+    def __init__(self, x0, y0, xf, yf, color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
+        super().__init__(x0, y0, xf, yf, arrowstyle = arrowstyle)
+        self.line = curves.Line(x0, y0, xf, yf)
+
+    def Draw(self, ax):
+        super().Draw(ax, self.line, self.arrowstyle)
+        self.line.Draw(ax)

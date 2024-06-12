@@ -41,6 +41,8 @@ class Sparse:
         print("Dense Set: ", self.D)
 
 sparse = Sparse(16)
+sparse.Add(5)
+sparse.Add(2)
 
 length = 1.0
 x_padding = 0.1

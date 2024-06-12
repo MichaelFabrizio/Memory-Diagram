@@ -22,21 +22,8 @@ class Drawing:
 
 
     def Draw_Vertical_Arrow(self, x0, y0, xf, yf, color, arrow_side_length = 0.2, dashed = False):
-        linestyle_ = '-'
-        if dashed:
-            linestyle_ = '--'
-
-        arrow_dy = math.cos(math.radians(30)) * arrow_side_length # arrow_dy is really "arrowhead_dy"
-        top_arrow_y0 = yf - arrow_dy
-        bot_arrow_y0 = y0 + arrow_dy
-
-        arrow = patches.FancyArrowPatch((x0, y0), (xf, yf), arrowstyle = '<->', linewidth=1.5, facecolor = color, edgecolor = 'black', linestyle = linestyle_)
-        self.ax.add_patch(arrow)
-
-        # Draw top arrow
-        self.__Draw_Triangle_Arrowhead(xf, top_arrow_y0, xf, yf, color, arrow_side_length)
-        # Draw bottom arrow
-        self.__Draw_Triangle_Arrowhead(x0, bot_arrow_y0, x0, y0, color, arrow_side_length)
+        arrow = arrows.VerticalArrow(x0, y0, xf, yf)
+        arrow.Draw(self.ax)
 
     # Eventually remerge this into Draw_Vertical_Arrow() function with an arrowstyle wrapper like matplotlib, ie: arrowstyle = '<->' draws double sided
     def Draw_Vertical_Down_Arrow(self, x0, y0, xf, yf, color, arrow_side_length = 0.2):
