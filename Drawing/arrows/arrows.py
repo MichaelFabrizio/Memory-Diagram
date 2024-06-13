@@ -57,22 +57,23 @@ class ArrowBase:
         if arrowstyle == '<-':
             arrowbody.Shorten(arrowhead_dy, 0)
             self.__Draw_Triangle_Arrowhead(ax, self.x0, bot_arrow_y0, self.x0, self.y0, self.color, arrowhead_dy)
-            pass
-
+        if arrowstyle == '->':
+            arrowbody.Shorten(0, arrowhead_dy)
+            self.__Draw_Triangle_Arrowhead(ax, self.xf, top_arrow_y0, self.xf, self.yf, self.color, arrowhead_dy)
 
 class DiagonalArrow(ArrowBase):
-    def __init__(self, x0, y0, xf, yf, color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
-        super().__init__(x0, y0, xf, yf, arrowstyle = arrowstyle)
-        self.cubic_bezier = curves.Bezier(x0, y0, xf, yf)
+    def __init__(self, x0, y0, xf, yf, color = 'white', arrowhead_size = 0.2, linestyle = '--', arrowstyle = '<->'):
+        super().__init__(x0, y0, xf, yf, linestyle = linestyle, arrowstyle = arrowstyle)
+        self.cubic_bezier = curves.Bezier(x0, y0, xf, yf, linestyle = linestyle)
 
     def Draw(self, ax):
         super().Draw(ax, self.cubic_bezier, self.arrowstyle)
         self.cubic_bezier.Draw(ax)
 
 class VerticalArrow(ArrowBase):
-    def __init__(self, x0, y0, xf, yf, color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
-        super().__init__(x0, y0, xf, yf, arrowstyle = arrowstyle)
-        self.line = curves.Line(x0, y0, xf, yf)
+    def __init__(self, x0, y0, xf, yf, color = 'white', arrowhead_size = 0.2, linestyle = '--', arrowstyle = '<->'):
+        super().__init__(x0, y0, xf, yf, linestyle = linestyle, arrowstyle = arrowstyle)
+        self.line = curves.Line(x0, y0, xf, yf, linestyle = linestyle)
 
     def Draw(self, ax):
         super().Draw(ax, self.line, self.arrowstyle)

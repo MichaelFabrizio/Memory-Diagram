@@ -4,15 +4,17 @@ import numpy as np
 import math as math
 
 class Curve:
-    def __init__(self, x0, y0, xf, yf):
+    def __init__(self, x0, y0, xf, yf, linestyle='-'):
         self.x0 = x0
         self.y0 = y0
         self.xf = xf
         self.yf = yf
 
+        self.linestyle = linestyle
+
 class Bezier(Curve):
-    def __init__(self, x0, y0, xf, yf):
-        super().__init__(x0, y0, xf, yf)
+    def __init__(self, x0, y0, xf, yf, linestyle = '-'):
+        super().__init__(x0, y0, xf, yf, linestyle = linestyle)
 
         # Eventually turn these into __init__ parameters
         self.orientation = math.radians(90) # Does nothing right now
@@ -39,12 +41,12 @@ class Bezier(Curve):
         _path = path.Path(vertices, codes)
         
         # Increased linewidth to 1.8 for these arrow paths because it looks better
-        path_patch = patches.PathPatch(_path, linewidth=1.8, fill=False, antialiased=True, linestyle = '-')
+        path_patch = patches.PathPatch(_path, linewidth=1.8, fill=False, antialiased=True, linestyle = self.linestyle)
         ax.add_patch(path_patch)
 
 class Line(Curve):
-    def __init__(self, x0, y0, xf, yf):
-        super().__init__(x0, y0, xf, yf)
+    def __init__(self, x0, y0, xf, yf, linestyle = '-'):
+        super().__init__(x0, y0, xf, yf, linestyle = linestyle)
 
     def Shorten(self, initial, final):
         self.y0 = self.y0 + initial
@@ -58,5 +60,5 @@ class Line(Curve):
         _path = path.Path(vertices, codes)
         
         # Increased linewidth to 1.8 for these arrow paths because it looks better
-        path_patch = patches.PathPatch(_path, linewidth=1.8, fill=False, antialiased=True, linestyle = '-')
+        path_patch = patches.PathPatch(_path, linewidth=1.8, fill=False, antialiased=True, linestyle = self.linestyle)
         ax.add_patch(path_patch)
