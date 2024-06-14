@@ -26,26 +26,12 @@ class Drawing:
         arrow.Draw(self.ax)
 
     def Draw_Diagonal_Arrow(self, x0, y0, xf, yf, interior_padding, color, arrow_side_length = 0.2, dashed = False):
-        arrow = arrows.DiagonalArrow(x0, y0, xf, yf, linestyle = '--')
+        arrow = arrows.DiagonalArrow(x0, y0, xf, yf, linestyle = '-')
         arrow.Draw(self.ax)
 
-    def Draw_Reconnecting_Arrow(self, x0, y0, xf, yf, interior_padding, color = 'tomato', arrow_side_length = 0.2):
-        # Used for shortening curve by arrowhead length
-        # This breaks when the bezier curve is defined at an angle (needs trig fix)
-        arrow_dy = math.cos(math.radians(30)) * arrow_side_length
-        control_point_y0 = y0 + interior_padding
-        control_point_yf = yf + interior_padding - arrow_dy
-        
-        vertices = np.array([(x0, y0), (x0, control_point_y0), (xf, control_point_yf), (xf, yf + arrow_dy)])
-        codes = np.array([1, 4, 4, 4])
-        _path = path.Path(vertices, codes)
-
-        # Increased linewidth to 1.8 for these arrow paths because it looks better
-        path_patch = patches.PathPatch(_path, linewidth=1.8, fill=False, antialiased=True)
-        self.ax.add_patch(path_patch)
-        
-        # Draw endpoint arrow
-        self.__Draw_Triangle_Arrowhead(xf, yf + arrow_dy, xf, yf, color, arrow_side_length)
+    def Draw_Reconnecting_Arrow(self, x_offset, y_offset, stride, cardinality = 'north', height = 1.0, linestyle = '-', arrowstyle = '<->'):
+        arrow = arrows.ReconnectingArrow(x_offset, y_offset, stride, cardinality = 'north', height = 1.0, linestyle = '-', arrowstyle = '<->')
+        arrow.Draw(self.ax)
 
     def Draw_Centered_X(self, x_center, y_center, length, color='red', inner_length = 0.2):
         half_length = length/2.
