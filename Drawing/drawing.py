@@ -22,7 +22,7 @@ class Drawing:
 
 
     def Draw_Vertical_Arrow(self, x0, y0, xf, yf, color, arrow_side_length = 0.2, dashed = False):
-        arrow = arrows.VerticalArrow(x0, y0, xf, yf, linestyle = '--')
+        arrow = arrows.VerticalArrow(x0, y0, xf, yf, linestyle = '-')
         arrow.Draw(self.ax)
 
     def Draw_Diagonal_Arrow(self, x0, y0, xf, yf, interior_padding, color, arrow_side_length = 0.2, dashed = False):
