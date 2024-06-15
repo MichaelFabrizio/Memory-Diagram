@@ -5,34 +5,29 @@ import curves.curves as curves
 import numpy as np
 
 class ArrowBase:
-    def __init__(self, x0, y0, xf, yf, color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
+    def __init__(self, x0, y0, xf, yf, theta_0 = 0.0, theta_f = 0.0, color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
         self.x0 = x0
         self.y0 = y0
         self.xf = xf
         self.yf = yf
+        self.theta_0 = theta_0
+        self.theta_f = theta_f
         self.color = color
         self.arrowhead_size = arrowhead_size
         self.arrowstyle = arrowstyle
         self.linestyle = linestyle
     
-    def __Draw_Triangle_Arrowhead(self, ax, x0, y0, xf, yf, color, side_length = 0.2):
-        dy = yf - y0
-        dx = xf - x0
-        theta = 0.0
+    def __Draw_Triangle_Arrowhead(self, ax, x0, y0, theta, color, side_length = 0.2):
+        arrowhead_length = math.cos(math.radians(30)) * self.arrowhead_size
 
-        # Prevent division by dy=0 errors
-        if dy == 0:
-            if dx < 0:
-                theta = math.radians(90)
-            if dx > 0:
-                theta = math.radians(-90)
-        else:
-            theta = math.atan(dx/dy)
+        xf = x0 + arrowhead_length * math.cos(theta)
+        yf = y0 + arrowhead_length * math.sin(theta)
 
+        print(theta)
         # Calculate arrowhead vertices using trig
         vertices = np.array([(x0, y0),                                                                                  # v0
-                             (x0 + side_length/2. * math.cos(theta), y0 - side_length/2. * math.sin(theta)),            # v1
-                             (xf, yf), (x0 - side_length/2. * math.cos(theta), y0 + side_length/2. * math.sin(theta)),  # v2
+                             (x0 + side_length/2. * math.sin(theta), y0 - side_length/2. * math.cos(theta)),            # v1
+                             (xf, yf), (x0 - side_length/2. * math.sin(theta), y0 + side_length/2. * math.cos(theta)),  # v2
                              (x0, y0)])                                                                                 # v3
 
         # MatPlotLib "Path codes" to define straight lines
@@ -48,34 +43,39 @@ class ArrowBase:
     # arrowbody - The curve or line of the arrow. Type arrowbody requires a method Shorten(initial_amount, final_amount, theta_0, theta_f). Theta in radians.
     def Draw(self, ax, arrowbody, arrowstyle):
         # Height delta of a single arrowhead
-        arrowhead_dy = math.cos(math.radians(30)) * self.arrowhead_size
-        top_arrow_y0 = self.yf - arrowhead_dy
-        bot_arrow_y0 = self.y0 + arrowhead_dy
+        arrowhead_length = math.cos(math.radians(30)) * self.arrowhead_size
+        
+        dx_0 = - arrowhead_length * math.cos(self.theta_0)
+        dy_0 = - arrowhead_length * math.sin(self.theta_0)
+        
+        dx_f = - arrowhead_length * math.cos(self.theta_f)
+        dy_f = - arrowhead_length * math.sin(self.theta_f)
 
         if arrowstyle == '<->':
-            arrowbody.Shorten(arrowhead_dy, arrowhead_dy)
-            self.__Draw_Triangle_Arrowhead(ax, self.xf, top_arrow_y0, self.xf, self.yf, self.color, arrowhead_dy)
-            self.__Draw_Triangle_Arrowhead(ax, self.x0, bot_arrow_y0, self.x0, self.y0, self.color, arrowhead_dy)
+            arrowbody.Shorten(arrowhead_length, arrowhead_length)
+            self.__Draw_Triangle_Arrowhead(ax, self.xf + dx_f, self.yf + dy_f, self.theta_f, self.color, arrowhead_length)
+            self.__Draw_Triangle_Arrowhead(ax, self.x0 + dx_0, self.y0 + dy_0, self.theta_0, self.color, arrowhead_length)
         if arrowstyle == '<-':
-            arrowbody.Shorten(arrowhead_dy, 0)
-            self.__Draw_Triangle_Arrowhead(ax, self.x0, bot_arrow_y0, self.x0, self.y0, self.color, arrowhead_dy)
+            arrowbody.Shorten(arrowhead_length, 0)
+            self.__Draw_Triangle_Arrowhead(ax, self.x0 + dx_0, self.y0 + dy_0, self.theta_0, self.color, arrowhead_length)
         if arrowstyle == '->':
-            arrowbody.Shorten(0, arrowhead_dy)
-            self.__Draw_Triangle_Arrowhead(ax, self.xf, top_arrow_y0, self.xf, self.yf, self.color, arrowhead_dy)
+            arrowbody.Shorten(0, arrowhead_length)
+            self.__Draw_Triangle_Arrowhead(ax, self.xf + dx_f, self.yf + dy_f, self.theta_f, self.color, arrowhead_length)
 
 class DiagonalArrow(ArrowBase):
     def __init__(self, x0, y0, xf, yf, color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
-        super().__init__(x0, y0, xf, yf, linestyle = linestyle, arrowstyle = arrowstyle)
+
+        # Class defined final direction vectors
+        theta_0 = math.radians(-90.0)
+        theta_f = math.radians(90.0)
+
+        super().__init__(x0, y0, xf, yf, theta_0, theta_f, linestyle = linestyle, arrowstyle = arrowstyle)
 
         # Calculate control points
         control_point_1x = x0;
         control_point_1y = y0 + 1.0; # Curve-strength = 1.0
         control_point_2x = xf;
         control_point_2y = yf - 1.0;
-
-        # Class defined final direction vectors
-        theta_0 = math.radians(-90.0)
-        theta_f = math.radians(90.0)
 
         # Generate cubic bezier's shape in constructor
         self.cubic_bezier = curves.Bezier(x0, y0, xf, yf, 
@@ -89,11 +89,12 @@ class DiagonalArrow(ArrowBase):
 
 class VerticalArrow(ArrowBase):
     def __init__(self, x0, y0, xf, yf, color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
-        super().__init__(x0, y0, xf, yf, linestyle = linestyle, arrowstyle = arrowstyle)
-
         # Class defined final direction vectors
         theta_0 = math.radians(-90.0)
         theta_f = math.radians(90.0)
+        
+        super().__init__(x0, y0, xf, yf, theta_0, theta_f, linestyle = linestyle, arrowstyle = arrowstyle)
+
         
         self.line = curves.Line(x0, y0, xf, yf, theta_0, theta_f, linestyle = linestyle)
     def Draw(self, ax):
@@ -104,9 +105,15 @@ class ReconnectingArrow(ArrowBase):
     def __init__(self, x_offset, y_offset, stride, cardinality = 'north', height = 1.0, linestyle = '-', arrowstyle = '<->'):
 
         if cardinality == 'north':
+            # Class defined final direction vectors
+            theta_0 = math.radians(90.0)
+            theta_f = math.radians(90.0)
+            
             x0 = x_offset - stride / 2.0
             xf = x_offset + stride / 2.0
-            super().__init__(x0, y_offset, xf, y_offset, linestyle = linestyle, arrowstyle = arrowstyle)
+            super().__init__(x0, y_offset, xf, y_offset,
+                             theta_0, theta_f,
+                             linestyle = linestyle, arrowstyle = arrowstyle)
         
             # Calculate control points
             control_point_1x = x0
@@ -114,9 +121,6 @@ class ReconnectingArrow(ArrowBase):
             control_point_2x = xf
             control_point_2y = y_offset - 1.0
 
-            # Class defined final direction vectors
-            theta_0 = math.radians(90.0)
-            theta_f = math.radians(90.0)
         if cardinality == 'south':
             pass
         if cardinality == 'east':
@@ -124,7 +128,6 @@ class ReconnectingArrow(ArrowBase):
         if cardinality == 'west':
             pass
         
-        super().__init__(x0, y_offset, xf, y_offset, linestyle = linestyle, arrowstyle = arrowstyle)
         # Generate cubic bezier's shape in constructor
         self.cubic_bezier = curves.Bezier(x0, y_offset, xf, y_offset, 
                                           control_point_1x, control_point_1y, control_point_2x, control_point_2y,
