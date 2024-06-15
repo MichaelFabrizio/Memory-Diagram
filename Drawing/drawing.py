@@ -30,7 +30,7 @@ class Drawing:
         arrow.Draw(self.ax)
 
     def Draw_Reconnecting_Arrow(self, x_offset, y_offset, stride, cardinality = 'north', height = 1.0, linestyle = '-', arrowstyle = '<->'):
-        arrow = arrows.ReconnectingArrow(x_offset, y_offset, stride, cardinality = 'north', height = 1.0, linestyle = '-', arrowstyle = '<->')
+        arrow = arrows.ReconnectingArrow(x_offset, y_offset, stride, cardinality, height = 1.0, linestyle = '-', arrowstyle = '<->')
         arrow.Draw(self.ax)
 
     def Draw_Centered_X(self, x_center, y_center, length, color='red', inner_length = 0.2):

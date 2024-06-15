@@ -23,7 +23,6 @@ class ArrowBase:
         xf = x0 + arrowhead_length * math.cos(theta)
         yf = y0 + arrowhead_length * math.sin(theta)
 
-        print(theta)
         # Calculate arrowhead vertices using trig
         vertices = np.array([(x0, y0),                                                                                  # v0
                              (x0 + side_length/2. * math.sin(theta), y0 - side_length/2. * math.cos(theta)),            # v1
@@ -102,34 +101,78 @@ class VerticalArrow(ArrowBase):
         self.line.Draw(ax)
 
 class ReconnectingArrow(ArrowBase):
-    def __init__(self, x_offset, y_offset, stride, cardinality = 'north', height = 1.0, linestyle = '-', arrowstyle = '<->'):
-
+    def __init__(self, x_offset, y_offset, stride, cardinality, height = 1.0, linestyle = '-', arrowstyle = '<->'):
+        # Can be generalized for different angles to reduce code bloat
         if cardinality == 'north':
-            # Class defined final direction vectors
             theta_0 = math.radians(90.0)
             theta_f = math.radians(90.0)
             
             x0 = x_offset - stride / 2.0
             xf = x_offset + stride / 2.0
+            y0 = y_offset
+            yf = y_offset
+
             super().__init__(x0, y_offset, xf, y_offset,
                              theta_0, theta_f,
                              linestyle = linestyle, arrowstyle = arrowstyle)
         
-            # Calculate control points
             control_point_1x = x0
             control_point_1y = y_offset - 1.0
             control_point_2x = xf
             control_point_2y = y_offset - 1.0
 
         if cardinality == 'south':
-            pass
+            theta_0 = math.radians(-90.0)
+            theta_f = math.radians(-90.0)
+            
+            x0 = x_offset - stride / 2.0
+            xf = x_offset + stride / 2.0
+            y0 = y_offset
+            yf = y_offset
+
+            super().__init__(x0, y_offset, xf, y_offset,
+                             theta_0, theta_f,
+                             linestyle = linestyle, arrowstyle = arrowstyle)
+        
+            control_point_1x = x0
+            control_point_1y = y_offset + 1.0
+            control_point_2x = xf
+            control_point_2y = y_offset + 1.0
         if cardinality == 'east':
-            pass
+            theta_0 = math.radians(0.0)
+            theta_f = math.radians(0.0)
+            
+            x0 = x_offset
+            xf = x_offset
+            y0 = y_offset - stride / 2.0
+            yf = y_offset + stride / 2.0
+            super().__init__(x_offset, y0, x_offset, yf,
+                             theta_0, theta_f,
+                             linestyle = linestyle, arrowstyle = arrowstyle)
+        
+            control_point_1x = x_offset - 1.0
+            control_point_1y = y0
+            control_point_2x = x_offset - 1.0
+            control_point_2y = yf
         if cardinality == 'west':
-            pass
+            theta_0 = math.radians(180.0)
+            theta_f = math.radians(180.0)
+            
+            x0 = x_offset
+            xf = x_offset
+            y0 = y_offset - stride / 2.0
+            yf = y_offset + stride / 2.0
+            super().__init__(x_offset, y0, x_offset, yf,
+                             theta_0, theta_f,
+                             linestyle = linestyle, arrowstyle = arrowstyle)
+        
+            control_point_1x = x_offset + 1.0
+            control_point_1y = y0
+            control_point_2x = x_offset + 1.0
+            control_point_2y = yf
         
         # Generate cubic bezier's shape in constructor
-        self.cubic_bezier = curves.Bezier(x0, y_offset, xf, y_offset, 
+        self.cubic_bezier = curves.Bezier(x0, y0, xf, yf, 
                                           control_point_1x, control_point_1y, control_point_2x, control_point_2y,
                                           theta_0, theta_f,
                                           linestyle = linestyle)
