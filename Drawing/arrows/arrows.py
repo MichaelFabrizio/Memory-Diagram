@@ -74,8 +74,8 @@ class DiagonalArrow(ArrowBase):
         control_point_2y = yf - 1.0;
 
         # Class defined final direction vectors
-        theta_0 = math.radians(90.0)
-        theta_f = math.radians(-90.0)
+        theta_0 = math.radians(-90.0)
+        theta_f = math.radians(90.0)
 
         # Generate cubic bezier's shape in constructor
         self.cubic_bezier = curves.Bezier(x0, y0, xf, yf, 
@@ -92,8 +92,8 @@ class VerticalArrow(ArrowBase):
         super().__init__(x0, y0, xf, yf, linestyle = linestyle, arrowstyle = arrowstyle)
 
         # Class defined final direction vectors
-        theta_0 = math.radians(90.0)
-        theta_f = math.radians(-90.0)
+        theta_0 = math.radians(-90.0)
+        theta_f = math.radians(90.0)
         
         self.line = curves.Line(x0, y0, xf, yf, theta_0, theta_f, linestyle = linestyle)
     def Draw(self, ax):
@@ -102,8 +102,6 @@ class VerticalArrow(ArrowBase):
 
 class ReconnectingArrow(ArrowBase):
     def __init__(self, x_offset, y_offset, stride, cardinality = 'north', height = 1.0, linestyle = '-', arrowstyle = '<->'):
-        x0 = 0.0
-        y0 = 0.0
 
         if cardinality == 'north':
             x0 = x_offset - stride / 2.0
@@ -117,8 +115,8 @@ class ReconnectingArrow(ArrowBase):
             control_point_2y = y_offset - 1.0
 
             # Class defined final direction vectors
-            theta_0 = math.radians(-90.0)
-            theta_f = math.radians(-90.0)
+            theta_0 = math.radians(90.0)
+            theta_f = math.radians(90.0)
         if cardinality == 'south':
             pass
         if cardinality == 'east':
@@ -126,7 +124,6 @@ class ReconnectingArrow(ArrowBase):
         if cardinality == 'west':
             pass
         
-        print(y0)
         super().__init__(x0, y_offset, xf, y_offset, linestyle = linestyle, arrowstyle = arrowstyle)
         # Generate cubic bezier's shape in constructor
         self.cubic_bezier = curves.Bezier(x0, y_offset, xf, y_offset, 

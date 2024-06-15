@@ -46,11 +46,11 @@ class Bezier(Curve):
 
 
     def Shorten(self, initial, final):
-        dx_0 = initial * math.cos(self.theta_0)
-        dy_0 = initial * math.sin(self.theta_0)
+        dx_0 = - initial * math.cos(self.theta_0)
+        dy_0 = - initial * math.sin(self.theta_0)
         
-        dx_f = final * math.cos(self.theta_f)
-        dy_f = final * math.sin(self.theta_f)
+        dx_f = - final * math.cos(self.theta_f)
+        dy_f = - final * math.sin(self.theta_f)
 
         self.control_point_1x = self.control_point_1x + dx_0
         self.control_point_1y = self.control_point_1y + dy_0
@@ -81,8 +81,16 @@ class Line(Curve):
         super().__init__(x0, y0, xf, yf, theta_0, theta_f, linestyle = linestyle)
 
     def Shorten(self, initial, final):
-        self.y0 = self.y0 + initial
-        self.yf = self.yf - final
+        dx_0 = - initial * math.cos(self.theta_0)
+        dy_0 = - initial * math.sin(self.theta_0)
+        
+        dx_f = - final * math.cos(self.theta_f)
+        dy_f = - final * math.sin(self.theta_f)
+
+        self.x0 = self.x0 + dx_0
+        self.y0 = self.y0 + dy_0
+        self.xf = self.xf + dx_f
+        self.yf = self.yf + dy_f
 
     def Draw(self, ax):
         vertices = np.array([(self.x0, self.y0),                    # Start coordinate
