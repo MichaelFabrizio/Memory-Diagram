@@ -13,6 +13,9 @@ sys.path.append(drawing_subdirectory)
 sys.path.append(memory_diagrams_subdirectory)
 
 import timelapse as timelapse
+import sparse as sparse
+import memory_diagrams.array as array
+import memory_diagrams.hybrid as hybrid
 
 ### BEGIN SCRIPT
 

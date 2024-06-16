@@ -1,7 +1,7 @@
 import numpy as np
 import math as math
 
-import Drawing.drawing as drawing
+import drawing as drawing
 
 class Hybrid:
     def __init__(self, capacity):
@@ -89,44 +89,43 @@ class Hybrid:
         print("Length: ", self.len)
         print("Sparse Set: ", self.S)
 
-hybrid = Hybrid(16)
+    def Draw(self):
+        length = 1.0
+        x_padding = 0.1
+        y_padding = 0.1
 
-length = 1.0
-x_padding = 0.1
-y_padding = 0.1
+        # (X,Y) Drawing start coordinates
+        x0 = x_padding
+        y0 = y_padding
 
-# (X,Y) Drawing start coordinates
-x0 = x_padding
-y0 = y_padding
+        # Adjust plot settings
+        axes_width = self.cap * (length + x_padding) + x_padding 
+        axes_height = 2.0 * y_padding + length
 
-# Adjust plot settings
-axes_width = hybrid.cap * (length + x_padding) + x_padding 
-axes_height = 2.0 * y_padding + length
+        _drawing = drawing.Drawing(diagram_width = 8., diagram_height = 4., show_axes=True)
+        _drawing.Set_Axes_Size(axes_width, axes_height)
 
-_drawing = drawing.Drawing(diagram_width = 8., diagram_height = 4., show_axes=True)
-_drawing.Set_Axes_Size(axes_width, axes_height)
+        # Draw rectangles for Hybrid Set S
+        for i, value in enumerate(self.S):
 
-# Draw rectangles for Hybrid Set S
-for i, value in enumerate(hybrid.S):
+            filled_color = 'darkseagreen'
+            index_color = 'cadetblue'
 
-    filled_color = 'darkseagreen'
-    index_color = 'cadetblue'
-
-    color = 'white'
-
-    if i <= (hybrid.len + 1):
-        if hybrid.S[i] == i:
-            color = 'darkseagreen'
-        else:
-            color = 'cadetblue'
-
-    if i > hybrid.len:
-        if hybrid.S[i] == 0:
             color = 'white'
-        else:
-            color = 'cadetblue'
 
-    _drawing.Draw_Square_With_Text(value, x0 + i * (length + x_padding), y0, length, color)
+            if i <= (self.len + 1):
+                if self.S[i] == i:
+                    color = 'darkseagreen'
+                else:
+                    color = 'cadetblue'
 
-_drawing.Save(name = 'Hybrid_Set.png')
-_drawing.Show()
+            if i > self.len:
+                if self.S[i] == 0:
+                    color = 'white'
+                else:
+                    color = 'cadetblue'
+
+            _drawing.Draw_Square_With_Text(value, x0 + i * (length + x_padding), y0, length, color)
+
+        _drawing.Save(name = 'Hybrid_Set.png')
+        _drawing.Show()
