@@ -180,3 +180,34 @@ class ReconnectingArrow(ArrowBase):
     def Draw(self, ax):
         super().Draw(ax, self.cubic_bezier, self.arrowstyle)
         self.cubic_bezier.Draw(ax)
+
+class CornerArrow(ArrowBase):
+    def __init__(self, x_offset, y_offset, radius, theta, linestyle = '-', arrowstyle = '<->'):
+        dx0 = - radius * math.sin(theta)
+        dy0 =   radius * math.cos(theta)
+        dxf =   radius * math.cos(theta)
+        dyf =   radius * math.sin(theta)
+
+        x0 = x_offset + dx0
+        y0 = y_offset + dy0
+        xf = x_offset + dxf
+        yf = y_offset + dyf
+
+        theta_0 = theta + math.pi/2.
+        theta_f = theta
+
+        control_point_1x = x_offset + 0.2 * dx0
+        control_point_1y = y_offset + 0.2 * dy0
+        control_point_2x = x_offset + 0.2 * dxf
+        control_point_2y = y_offset + 0.2 * dyf
+
+        super().__init__(x0, y0, xf, yf, theta_0, theta_f, linestyle = linestyle, arrowstyle = arrowstyle)
+        
+        self.cubic_bezier = curves.Bezier(x0, y0, xf, yf, 
+                                          control_point_1x, control_point_1y, control_point_2x, control_point_2y,
+                                          theta_0, theta_f,
+                                          linestyle = linestyle)
+    
+    def Draw(self, ax):
+        super().Draw(ax, self.cubic_bezier, self.arrowstyle)
+        self.cubic_bezier.Draw(ax)

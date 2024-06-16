@@ -33,6 +33,10 @@ class Drawing:
         arrow = arrows.ReconnectingArrow(x_offset, y_offset, stride, cardinality, height = 1.0, linestyle = '-', arrowstyle = '<->')
         arrow.Draw(self.ax)
 
+    def Draw_Corner_Arrow(self, x, y, radius, theta):
+        arrow = arrows.CornerArrow(x, y, radius, theta)
+        arrow.Draw(self.ax)
+
     def Draw_Centered_X(self, x_center, y_center, length, color='red', inner_length = 0.2):
         half_length = length/2.
         length_diff = half_length - inner_length
