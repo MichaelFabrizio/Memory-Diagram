@@ -41,6 +41,9 @@ class Sparse:
         print("Dense Set: ", self.D)
 
 sparse = Sparse(16)
+sparse.Add(5)
+sparse.Add(2)
+
 
 length = 1.0
 x_padding = 0.1
@@ -61,6 +64,7 @@ axes_height = array_separation + 2.0 * length + 2.0 * y_padding
 _drawing = drawing.Drawing(diagram_width = 8., diagram_height = 4., show_axes=True)
 _drawing.Set_Axes_Size(axes_width, axes_height)
 
+_drawing.Draw_Reconnecting_Arrow(2.0, 2.0, 1.0)
 # Draw rectangles for Sparse Set S
 for i, value in enumerate(sparse.S):
     sx_center = x0 + length/2. + i * (length + x_padding)
