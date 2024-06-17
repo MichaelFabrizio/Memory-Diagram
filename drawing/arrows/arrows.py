@@ -87,11 +87,10 @@ class DiagonalArrow(ArrowBase):
         self.cubic_bezier.Draw(ax)
 
 class VerticalArrow(ArrowBase):
-    def __init__(self, x0, y0, xf, yf, color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
-        # Class defined final direction vectors
-        theta_0 = math.radians(-90.0)
-        theta_f = math.radians(90.0)
-        
+    def __init__(self, x0, y0, xf, yf, 
+                 theta_0 = math.radians(-90.0), theta_f = math.radians(90.0),
+                 color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
+
         super().__init__(x0, y0, xf, yf, theta_0, theta_f, linestyle = linestyle, arrowstyle = arrowstyle)
 
         

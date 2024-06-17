@@ -149,6 +149,30 @@ class Timelapse:
             self.drawing.Draw_Square_With_Text(value, x0 + i * (length + x_padding), y0, length, color)
 
         self.drawing.Step_Array_Down(self.stepsize)
+        self.Clear()
+
+    def DrawInput(self, key):
+        length = 1.0
+        x_padding = 0.1
+        y_padding = 0.1
+
+        x0 = x_padding
+        y0 = y_padding + (self.totalsteps - 1) * self.stepsize
+
+        x_key = x0 + key * (length + x_padding)
+
+        x_arrow = x_key + length/2.
+        y_arrow_f = y0 + length - self.stepsize
+
+        self.drawing.Draw_Square_With_Text(key, x_key, y0, length, 'darkseagreen')
+
+        self.drawing.Draw_Vertical_Arrow(   x_arrow, y0, x_arrow, y_arrow_f,
+                                            theta_0 = math.radians(90.0), theta_f = math.radians(-90.0),
+                                            color = 'darkseagreen', arrowstyle = '->')
+
+        self.drawing.Step_Array_Down(self.stepsize)
+        self.Clear()
+
 
     def Save(self):
         self.drawing.Save(name = 'Hybrid_Set.png')

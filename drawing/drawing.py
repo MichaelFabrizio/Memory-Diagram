@@ -21,8 +21,13 @@ class Drawing:
 
 
 
-    def Draw_Vertical_Arrow(self, x0, y0, xf, yf, color, arrow_side_length = 0.2, dashed = False):
-        arrow = arrows.VerticalArrow(x0, self.offset + y0, xf, self.offset + yf, linestyle = '-')
+    def Draw_Vertical_Arrow(self, x0, y0, xf, yf, color, 
+                            theta_0 = math.radians(-90.0), theta_f = math.radians(90.0),
+                            arrow_side_length = 0.2, dashed = False, arrowstyle = '<->'):
+
+        arrow = arrows.VerticalArrow(   x0, self.offset + y0, xf, self.offset + yf,
+                                        theta_0 = theta_0, theta_f = theta_f,
+                                        linestyle = '-', arrowstyle = arrowstyle)
         arrow.Draw(self.ax)
 
     def Draw_Diagonal_Arrow(self, x0, y0, xf, yf, interior_padding, color, arrow_side_length = 0.2, dashed = False):
