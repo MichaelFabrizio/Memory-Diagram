@@ -4,10 +4,30 @@ import math as math
 import drawing as drawing
 
 class Timelapse:
-    def __init__(self, capacity):
+    def __init__(self, capacity, totalsteps):
         self.cap = capacity
         self.len = 0
         self.S = np.zeros(capacity, int)
+        self.totalsteps = totalsteps
+        self.stepsize = 3.0
+
+        self.drawing = drawing.Drawing(diagram_width = 8., diagram_height = 4., show_axes=True)
+        
+        ## Temporarily here, but this code can be merged with Draw() call code
+        #  Need to declare these as member variables
+        length = 1.0
+        x_padding = 0.1
+        y_padding = 0.1
+
+        # (X,Y) Drawing start coordinates
+        x0 = x_padding
+        y0 = y_padding
+
+        # Adjust plot settings
+        axes_width = self.cap * (length + x_padding) + x_padding 
+        axes_height = 2.0 * y_padding + length + (self.totalsteps - 1) * self.stepsize
+
+        self.drawing.Set_Axes_Size(axes_width, axes_height)
 
 # INTERNAL ALGORITHM IMPLEMENTATION:
 
@@ -85,6 +105,10 @@ class Timelapse:
         if key > (self.len + 1):
             self.__Checked_Greater_Than_Place(key)
 
+    def Clear(self):
+        for i, element in enumerate(self.S):
+            self.S[i] = 0
+
     def Debug_Info(self):
         print("Length: ", self.len)
         print("Sparse Set: ", self.S)
@@ -96,14 +120,7 @@ class Timelapse:
 
         # (X,Y) Drawing start coordinates
         x0 = x_padding
-        y0 = y_padding
-
-        # Adjust plot settings
-        axes_width = self.cap * (length + x_padding) + x_padding 
-        axes_height = 2.0 * y_padding + length
-
-        _drawing = drawing.Drawing(diagram_width = 8., diagram_height = 4., show_axes=True)
-        _drawing.Set_Axes_Size(axes_width, axes_height)
+        y0 = y_padding + (self.totalsteps - 1) * self.stepsize
 
         # Draw rectangles for Hybrid Set S
         for i, value in enumerate(self.S):
@@ -113,8 +130,12 @@ class Timelapse:
 
             color = 'white'
 
-            if i <= (self.len + 1):
-                if self.S[i] == i:
+            if i == 0:
+                color = 'darkseagreen'
+            elif i <= (self.len):
+                if self.S[i] == 0:
+                    color = 'white'
+                elif self.S[i] == i:
                     color = 'darkseagreen'
                 else:
                     color = 'cadetblue'
@@ -125,30 +146,14 @@ class Timelapse:
                 else:
                     color = 'cadetblue'
 
-            _drawing.Draw_Square_With_Text(value, x0 + i * (length + x_padding), y0, length, color)
+            self.drawing.Draw_Square_With_Text(value, x0 + i * (length + x_padding), y0, length, color)
 
-        _drawing.Step_Array_Down(2.0)
+        self.drawing.Step_Array_Down(self.stepsize)
 
-        for i, value in enumerate(self.S):
+    def Save(self):
+        self.drawing.Save(name = 'Hybrid_Set.png')
 
-            filled_color = 'darkseagreen'
-            index_color = 'cadetblue'
+    def Show(self):
+        self.drawing.Show()
 
-            color = 'white'
 
-            if i <= (self.len + 1):
-                if self.S[i] == i:
-                    color = 'darkseagreen'
-                else:
-                    color = 'cadetblue'
-
-            if i > self.len:
-                if self.S[i] == 0:
-                    color = 'white'
-                else:
-                    color = 'cadetblue'
-
-            _drawing.Draw_Square_With_Text(value, x0 + i * (length + x_padding), y0, length, color)
-
-        _drawing.Save(name = 'Hybrid_Set.png')
-        _drawing.Show()

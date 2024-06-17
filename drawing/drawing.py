@@ -22,19 +22,19 @@ class Drawing:
 
 
     def Draw_Vertical_Arrow(self, x0, y0, xf, yf, color, arrow_side_length = 0.2, dashed = False):
-        arrow = arrows.VerticalArrow(x0, y0, xf, yf, linestyle = '-')
+        arrow = arrows.VerticalArrow(x0, self.offset + y0, xf, self.offset + yf, linestyle = '-')
         arrow.Draw(self.ax)
 
     def Draw_Diagonal_Arrow(self, x0, y0, xf, yf, interior_padding, color, arrow_side_length = 0.2, dashed = False):
-        arrow = arrows.DiagonalArrow(x0, y0, xf, yf, linestyle = '-')
+        arrow = arrows.DiagonalArrow(x0, self.offset + y0, xf, self.offset + yf, linestyle = '-')
         arrow.Draw(self.ax)
 
     def Draw_Reconnecting_Arrow(self, x_offset, y_offset, stride, cardinality = 'north', height = 1.0, linestyle = '-', arrowstyle = '<->'):
-        arrow = arrows.ReconnectingArrow(x_offset, y_offset, stride, cardinality, height = 1.0, linestyle = '-', arrowstyle = '<->')
+        arrow = arrows.ReconnectingArrow(x_offset, self.offset + y_offset, stride, cardinality, height = 1.0, linestyle = '-', arrowstyle = '<->')
         arrow.Draw(self.ax)
 
     def Draw_Corner_Arrow(self, x, y, radius, theta):
-        arrow = arrows.CornerArrow(x, y, radius, theta)
+        arrow = arrows.CornerArrow(x, self.offset + y, radius, theta)
         arrow.Draw(self.ax)
 
     def Draw_Centered_X(self, x_center, y_center, length, color='red', inner_length = 0.2):
