@@ -34,7 +34,7 @@ class ArrowBase:
         _path = path.Path(vertices, codes)
 
         # Create arrowhead patch
-        path_patch = patches.PathPatch(_path, linewidth=1.5, facecolor = color, antialiased=True)
+        path_patch = patches.PathPatch(_path, linewidth=1.6, facecolor = color, antialiased=True)
         ax.add_patch(path_patch)
 
     # PARAMETERS:
@@ -116,9 +116,9 @@ class ReconnectingArrow(ArrowBase):
                              linestyle = linestyle, arrowstyle = arrowstyle)
         
             control_point_1x = x0
-            control_point_1y = y_offset - 1.0
+            control_point_1y = y_offset - height
             control_point_2x = xf
-            control_point_2y = y_offset - 1.0
+            control_point_2y = y_offset - height
 
         if cardinality == 'south':
             theta_0 = math.radians(-90.0)
@@ -134,9 +134,9 @@ class ReconnectingArrow(ArrowBase):
                              linestyle = linestyle, arrowstyle = arrowstyle)
         
             control_point_1x = x0
-            control_point_1y = y_offset + 1.0
+            control_point_1y = y_offset + height
             control_point_2x = xf
-            control_point_2y = y_offset + 1.0
+            control_point_2y = y_offset + height
         if cardinality == 'east':
             theta_0 = math.radians(0.0)
             theta_f = math.radians(0.0)
@@ -149,9 +149,9 @@ class ReconnectingArrow(ArrowBase):
                              theta_0, theta_f,
                              linestyle = linestyle, arrowstyle = arrowstyle)
         
-            control_point_1x = x_offset - 1.0
+            control_point_1x = x_offset - height
             control_point_1y = y0
-            control_point_2x = x_offset - 1.0
+            control_point_2x = x_offset - height
             control_point_2y = yf
         if cardinality == 'west':
             theta_0 = math.radians(180.0)
@@ -165,9 +165,9 @@ class ReconnectingArrow(ArrowBase):
                              theta_0, theta_f,
                              linestyle = linestyle, arrowstyle = arrowstyle)
         
-            control_point_1x = x_offset + 1.0
+            control_point_1x = x_offset + height
             control_point_1y = y0
-            control_point_2x = x_offset + 1.0
+            control_point_2x = x_offset + height
             control_point_2y = yf
         
         # Generate cubic bezier's shape in constructor
@@ -181,11 +181,11 @@ class ReconnectingArrow(ArrowBase):
         self.cubic_bezier.Draw(ax)
 
 class CornerArrow(ArrowBase):
-    def __init__(self, x_offset, y_offset, radius, theta, linestyle = '-', arrowstyle = '<->'):
-        dx0 = - radius * math.sin(theta)
-        dy0 =   radius * math.cos(theta)
-        dxf =   radius * math.cos(theta)
-        dyf =   radius * math.sin(theta)
+    def __init__(self, x_offset, y_offset, height, width, theta, linestyle = '-', arrowstyle = '<->'):
+        dx0 = - height * math.sin(theta)
+        dy0 =   height * math.cos(theta)
+        dxf =   width  * math.cos(theta)
+        dyf =   width  * math.sin(theta)
 
         x0 = x_offset + dx0
         y0 = y_offset + dy0
