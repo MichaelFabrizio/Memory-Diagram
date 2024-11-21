@@ -7,11 +7,40 @@ import math as math
 import arrows.arrows as arrows
 
 class Drawing:
-    def __init__(self, diagram_width = 20.0, diagram_height = 4.0, show_axes = False):
-        self.offset = 0.0
+    def __init__(self, diagram_width = 20.0, diagram_height = 4.0, show_axes = False,
+                 left_padding = 0.1, right_padding = 0.1, lower_padding = 0.1, upper_padding = 0.1,
+                 interior_x_padding = 0.1, interior_y_padding = 1.0,
+                 horizontal_elements = 0, vertical_elements = 0,
+                 element_width = 1.0, element_height = 1.0):
+
+        self.left_padding = left_padding
+        self.right_padding = right_padding
+        self.lower_padding = lower_padding
+        self.upper_padding = upper_padding
+
+        self.interior_x_padding = interior_x_padding
+        self.interior_y_padding = interior_y_padding
+
+        self.horizontal_elements = horizontal_elements
+        self.vertical_elements = vertical_elements
+
+        self.element_width = element_width
+        self.element_height = element_height
+
+        self.offset = 0.0 # Maybe deprecate
+        self.x_offset = 0.0
+        self.y_offset = 0.0 # TODO: Start offset from top
+
+        self.axes_width = self.left_padding + self.right_padding + 
+            self.horizontal_elements * (self.interior_x_padding + self.element_width)
+
+        self.axes_height = self.lower_padding + self.upper_padding +
+            self.vertical_elements * (self.interior_y_padding + self.element_height)
+
+        # TODO: Calculate axes aspect ratio. Make diagram_width / diagram_height adjustments
 
         self.fig, self.ax = plt.subplots(figsize=(diagram_width, diagram_height))
-        self.ax.set_aspect('equal')
+        self.ax.set_aspect('equal') # TODO: Double check if necessary
 
         if show_axes:
             self.ax.set_xticks([])
