@@ -13,6 +13,9 @@ class Drawing:
                  horizontal_elements = 0, vertical_elements = 0,
                  element_width = 1.0, element_height = 1.0):
 
+        self.diagram_width = diagram_width
+        self.diagram_height = diagram_height
+
         self.left_padding = left_padding
         self.right_padding = right_padding
         self.lower_padding = lower_padding
@@ -27,20 +30,36 @@ class Drawing:
         self.element_width = element_width
         self.element_height = element_height
 
-        self.offset = 0.0 # Maybe deprecate
-        self.x_offset = 0.0
-        self.y_offset = 0.0 # TODO: Start offset from top
+        self.axes_width = self.left_padding + self.right_padding + float(self.horizontal_elements) * (self.interior_x_padding + self.element_width) - self.interior_x_padding
+        self.axes_height = self.lower_padding + self.upper_padding + float(self.vertical_elements) * (self.interior_y_padding + self.element_height) - self.interior_y_padding
+        
+        # self.offset = 0.0 # TODO: Deprecate
+        self.x_offset = self.left_padding
+        self.y_offset = self.axes_height - self.upper_padding - self.element_height
 
-        self.axes_width = self.left_padding + self.right_padding + 
-            self.horizontal_elements * (self.interior_x_padding + self.element_width)
+        # BEGIN: diagram_width / diagram_height scaling logic
+        #
+        # LOGIC: Adjusts diagram_width and diagram_height to match the required
+        # axes_aspect_ratio. Otherwise there will be skewed dimensions.
+        #
+        # ====================
+        self.axes_aspect_ratio = self.axes_width / self.axes_height
 
-        self.axes_height = self.lower_padding + self.upper_padding +
-            self.vertical_elements * (self.interior_y_padding + self.element_height)
+        # Width-based major axis
+        if self.axes_aspect_ratio > 1.0:
+            self.diagram_height = self.diagram_width / self.axes_aspect_ratio
+        # Height-based major axis
+        else:
+            self.diagram_width = self.diagram_height * self.axes_aspect_ratio
+        # ====================
+        # END: diagram_width / diagram_height scaling logic
 
-        # TODO: Calculate axes aspect ratio. Make diagram_width / diagram_height adjustments
 
-        self.fig, self.ax = plt.subplots(figsize=(diagram_width, diagram_height))
-        self.ax.set_aspect('equal') # TODO: Double check if necessary
+        self.fig, self.ax = plt.subplots(figsize=(self.diagram_width, self.diagram_height))
+        # self.ax.set_aspect('equal') # TODO: Double check if necessary
+        
+        self.ax.set_xlim(0, self.axes_width)
+        self.ax.set_ylim(0, self.axes_height)
 
         if show_axes:
             self.ax.set_xticks([])
@@ -49,23 +68,27 @@ class Drawing:
             self.ax.axis('off')
 
 
-
+    # TODO: Update offsets
     def Draw_Vertical_Arrow(self, x0, y0, xf, yf, color, arrow_side_length = 0.2, dashed = False):
         arrow = arrows.VerticalArrow(x0, self.offset + y0, xf, self.offset + yf, linestyle = '-')
         arrow.Draw(self.ax)
 
+    # TODO: Update offsets
     def Draw_Diagonal_Arrow(self, x0, y0, xf, yf, interior_padding, color, arrow_side_length = 0.2, dashed = False):
         arrow = arrows.DiagonalArrow(x0, self.offset + y0, xf, self.offset + yf, linestyle = '-')
         arrow.Draw(self.ax)
 
+    # TODO: Update offsets
     def Draw_Reconnecting_Arrow(self, x_offset, y_offset, stride, cardinality = 'north', height = 1.0, linestyle = '-', arrowstyle = '<->'):
         arrow = arrows.ReconnectingArrow(x_offset, self.offset + y_offset, stride, cardinality, height = 1.0, linestyle = '-', arrowstyle = '<->')
         arrow.Draw(self.ax)
 
+    # TODO: Update offsets
     def Draw_Corner_Arrow(self, x, y, radius, theta):
         arrow = arrows.CornerArrow(x, self.offset + y, radius, theta)
         arrow.Draw(self.ax)
 
+    # TODO: Update offsets
     def Draw_Centered_X(self, x_center, y_center, length, color='red', inner_length = 0.2):
         half_length = length/2.
         length_diff = half_length - inner_length
@@ -111,23 +134,25 @@ class Drawing:
         path_patch = patches.PathPatch(_path, linewidth=1.5, facecolor = color, fill=True, antialiased=True)
         self.ax.add_patch(path_patch)
 
-    def Draw_Square_With_Text(self, text, x0, y0, length, color):
-        rect = patches.Rectangle((x0, self.offset + y0), length, length, facecolor=color, edgecolor='black', linewidth=1.5)
+    def Draw_Square_With_Text(self, text, i, color):
+        x_coordinate = self.x_offset + i * (self.element_width + self.interior_x_padding)
+        x_coordinate_text = x_coordinate + self.element_width/2.
+        y_coordinate_text = self.y_offset + self.element_height/2.
+
+        rect = patches.Rectangle((x_coordinate, self.y_offset), self.element_width, self.element_height, facecolor=color, edgecolor='black', linewidth=1.5)
         self.ax.add_patch(rect)
-        self.ax.text(x0 + length/2., self.offset + y0 + length/2., str(text), ha='center', va='center', fontweight='bold')
+        self.ax.text(x_coordinate_text, y_coordinate_text, str(text), ha='center', va='center', fontweight='bold')
         
+    # TODO: Update offsets
     def Draw_Array(self, array, x0, y0, padding, length, color):
         for i, value in enumerate(array):
             rect = patches.Rectangle((x0 + i * (length + padding), self.offset + y0), length, length, facecolor=color, edgecolor='black', linewidth=1.5)
             self.ax.add_patch(rect)
             self.ax.text(x0 + length/2. + i * (length + padding), self.offset + y0 + length/2., str(value), ha='center', va='center', fontweight='bold')
 
+    # TODO: Implement stepdown logic
     def Step_Array_Down(self, offset_amount=0.0):
         self.offset = self.offset - offset_amount
-
-    def Set_Axes_Size(self, axes_width, axes_height):
-        self.ax.set_xlim(0, axes_width)
-        self.ax.set_ylim(0, axes_height)
 
     def Show(self):
         plt.show()

@@ -19,5 +19,8 @@ import memory_diagrams.hybrid as hybrid
 
 ### BEGIN SCRIPT
 
-timelapse = timelapse.Timelapse(16)
-timelapse.Draw()
+array = array.Array(10)
+array.Draw()
+
+# timelapse = timelapse.Timelapse(16)
+# timelapse.Draw()
