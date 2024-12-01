@@ -45,12 +45,13 @@ class Array:
                 dcolor = 'white'
 
             _drawing.Draw_Square_With_Text(value, i, dcolor)
+        
+        # TODO: Test, Fix, Remove
+        _drawing.Draw_Underline_Bar_Floating(1.0, 0.5, 2.0, 1.0)
 
         #_drawing.Save(name = 'Simple_Array.png')
         _drawing.Show()
 
-        # TODO: Test, Fix, Remove
-        _drawing.Draw_Underline_Bar(0.0, 0.0, 2.0, 1.0)
 
     def Save(self, name = 'array.png'):
         _drawing.Save(name)

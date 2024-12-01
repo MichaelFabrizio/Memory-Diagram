@@ -13,23 +13,31 @@ class Drawing:
                  horizontal_elements = 0, vertical_elements = 0,
                  element_width = 1.0, element_height = 1.0):
 
+        # The diagram image size on paper, in inches.
         self.diagram_width = diagram_width
         self.diagram_height = diagram_height
 
+        # The 'exterior paddings', which add layering around the 'functional diagram' itself.
         self.left_padding = left_padding
         self.right_padding = right_padding
         self.lower_padding = lower_padding
         self.upper_padding = upper_padding
 
+        # The 'interior paddings', which is the spacing between elements
         self.interior_x_padding = interior_x_padding
         self.interior_y_padding = interior_y_padding
 
+        # The diagram is built as a table-like system:
+        # IE: There are a set number of horizontal and vertical elements.
+        # This allows us to calculate the required dimensions (axes_width, axes_height), below.
         self.horizontal_elements = horizontal_elements
         self.vertical_elements = vertical_elements
 
+        # Each element is either a square or rectangle, with some spacing in-between.
         self.element_width = element_width
         self.element_height = element_height
 
+        # The actual plot dimensions required, ie: the XY coordinate ranges that all values are based on.
         self.axes_width = self.left_padding + self.right_padding + float(self.horizontal_elements) * (self.interior_x_padding + self.element_width) - self.interior_x_padding
         self.axes_height = self.lower_padding + self.upper_padding + float(self.vertical_elements) * (self.interior_y_padding + self.element_height) - self.interior_y_padding
         
@@ -134,14 +142,24 @@ class Drawing:
         path_patch = patches.PathPatch(_path, linewidth=1.5, facecolor = color, fill=True, antialiased=True)
         self.ax.add_patch(path_patch)
 
-    def Draw_Underline_Bar(self, x0, y0, stride, height, linewidth = 0.1, color='red'):
+    def Draw_Underline_Bar_Anchored(self, index_initial, index_final, height):
+        pass
+        
+        if index_initial >= index_final:
+            raise AssertionError("index_initial >= index_final")
+
+        x0 = self.x_offset + index_initial * (self.element_width + self.interior_x_padding)
+        # TODO: xf, y0, yf calculations
+        # TODO: Draw_Underline_Bar_Floating()
+
+    def Draw_Underline_Bar_Floating(self, x0, y0, stride, height, linewidth = 0.1, color='red'):
         # Secondary calculations
         if height < linewidth:
             raise AssertionError("height < linewidth")
         elif stride < linewidth:
             raise AssertionError("stride < linewidth")
 
-        height_lift = height/2. - linewidth
+        height_lift = (height - linewidth) / 2.
 
         v0x = x0
         v0y = y0
@@ -167,11 +185,11 @@ class Drawing:
         v10y = y0 + height
         v11x = x0
         v11y = y0 + height
-        
-        # Define line segments in MatPlotLib
+       
         vertices = np.array([(v0x, v0y), (v1x, v1y), (v2x, v2y), (v3x, v3y), (v4x, v4y), (v5x, v5y),
                              (v6x, v6y), (v7x, v7y), (v8x, v8y), (v9x, v9y), (v10x, v10y), (v11x, v11y), (v0x, v0y)])
         codes = np.array([1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
+        
         _path = path.Path(vertices, codes)
 
         path_patch = patches.PathPatch(_path, linewidth=1.5, facecolor = color, fill=True, antialiased=True)
