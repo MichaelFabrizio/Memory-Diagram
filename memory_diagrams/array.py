@@ -28,7 +28,7 @@ class Array:
 
     def Draw(self):
 
-        _drawing = drawing.Drawing(diagram_width = 11., diagram_height = 4., show_axes = True, horizontal_elements = self.cap, vertical_elements = 1)
+        _drawing = drawing.Drawing(diagram_width = 11., diagram_height = 4., show_axes = True, horizontal_elements = self.cap, vertical_elements = 1, lower_padding = 1.0)
 
         for i, value in enumerate(self.D):
 
@@ -46,5 +46,11 @@ class Array:
 
             _drawing.Draw_Square_With_Text(value, i, dcolor)
 
-        _drawing.Save(name = 'Simple_Array.png')
+        #_drawing.Save(name = 'Simple_Array.png')
         _drawing.Show()
+
+        # TODO: Test, Fix, Remove
+        _drawing.Draw_Underline_Bar(0.0, 0.0, 2.0, 1.0)
+
+    def Save(self, name = 'array.png'):
+        _drawing.Save(name)

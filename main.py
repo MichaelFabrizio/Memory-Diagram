@@ -20,7 +20,17 @@ import memory_diagrams.hybrid as hybrid
 ### BEGIN SCRIPT
 
 array = array.Array(10)
+array.Add(1)
+array.Add(2)
+array.Add(3)
+array.Add(4)
+array.Add(5)
+array.Add(6)
+
 array.Draw()
+
+# TODO: Fix
+# array.Save(name = 'image_1a.png')
 
 # timelapse = timelapse.Timelapse(16)
 # timelapse.Draw()

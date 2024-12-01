@@ -134,6 +134,49 @@ class Drawing:
         path_patch = patches.PathPatch(_path, linewidth=1.5, facecolor = color, fill=True, antialiased=True)
         self.ax.add_patch(path_patch)
 
+    def Draw_Underline_Bar(self, x0, y0, stride, height, linewidth = 0.1, color='red'):
+        # Secondary calculations
+        if height < linewidth:
+            raise AssertionError("height < linewidth")
+        elif stride < linewidth:
+            raise AssertionError("stride < linewidth")
+
+        height_lift = height/2. - linewidth
+
+        v0x = x0
+        v0y = y0
+        v1x = x0 + linewidth
+        v1y = y0
+        v2x = x0 + linewidth
+        v2y = y0 + height_lift
+        v3x = x0 + stride - linewidth
+        v3y = y0 + height_lift
+        v4x =  x0 + stride - linewidth
+        v4y = y0
+        v5x = x0 + stride
+        v5y = y0
+        v6x = x0 + stride
+        v6y = y0 + height
+        v7x = x0 + stride - linewidth
+        v7y = y0 + height
+        v8x = x0 + stride - linewidth
+        v8y = y0 + height - height_lift
+        v9x = x0 + linewidth
+        v9y = y0 + height - height_lift
+        v10x = x0 + linewidth
+        v10y = y0 + height
+        v11x = x0
+        v11y = y0 + height
+        
+        # Define line segments in MatPlotLib
+        vertices = np.array([(v0x, v0y), (v1x, v1y), (v2x, v2y), (v3x, v3y), (v4x, v4y), (v5x, v5y),
+                             (v6x, v6y), (v7x, v7y), (v8x, v8y), (v9x, v9y), (v10x, v10y), (v11x, v11y), (v0x, v0y)])
+        codes = np.array([1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
+        _path = path.Path(vertices, codes)
+
+        path_patch = patches.PathPatch(_path, linewidth=1.5, facecolor = color, fill=True, antialiased=True)
+        self.ax.add_patch(path_patch)
+
     def Draw_Square_With_Text(self, text, i, color):
         x_coordinate = self.x_offset + i * (self.element_width + self.interior_x_padding)
         x_coordinate_text = x_coordinate + self.element_width/2.
@@ -158,4 +201,4 @@ class Drawing:
         plt.show()
 
     def Save(self, name = 'data_structure.png'):
-        plt.savefig(name, bbox_inches='tight', pad_inches=0.1)
+        plt.savefig(str(name), bbox_inches='tight', pad_inches=0.1)
