@@ -7,7 +7,7 @@ import math as math
 import arrows.arrows as arrows
 
 class Drawing:
-    def __init__(self, diagram_width = 20.0, diagram_height = 4.0, show_axes = False,
+    def __init__(self, diagram_width = 20.0, diagram_height = 4.0, show_axes = False, show_axes_numbers = False,
                  left_padding = 0.1, right_padding = 0.1, lower_padding = 0.1, upper_padding = 0.1,
                  interior_x_padding = 0.1, interior_y_padding = 1.0,
                  horizontal_elements = 0, vertical_elements = 0,
@@ -41,9 +41,10 @@ class Drawing:
         self.axes_width = self.left_padding + self.right_padding + float(self.horizontal_elements) * (self.interior_x_padding + self.element_width) - self.interior_x_padding
         self.axes_height = self.lower_padding + self.upper_padding + float(self.vertical_elements) * (self.interior_y_padding + self.element_height) - self.interior_y_padding
         
-        # self.offset = 0.0 # TODO: Deprecate
         self.x_offset = self.left_padding
         self.y_offset = self.axes_height - self.upper_padding - self.element_height
+
+        print(self.y_offset)
 
         # BEGIN: diagram_width / diagram_height scaling logic
         #
@@ -70,8 +71,11 @@ class Drawing:
         self.ax.set_ylim(0, self.axes_height)
 
         if show_axes:
-            self.ax.set_xticks([])
-            self.ax.set_yticks([])
+            if show_axes_numbers:
+                return
+            else:
+                self.ax.set_xticks([])
+                self.ax.set_yticks([])
         else:
             self.ax.axis('off')
 
@@ -151,7 +155,8 @@ class Drawing:
         x0 = self.x_offset + index_initial * (self.element_width + self.interior_x_padding)
         # TODO: xf, y0, yf calculations
         # TODO: Draw_Underline_Bar_Floating()
-
+    
+    
     def Draw_Underline_Bar_Floating(self, x0, y0, stride, height, linewidth = 0.1, color='red'):
         # Secondary calculations
         if height < linewidth:
@@ -194,6 +199,11 @@ class Drawing:
 
         path_patch = patches.PathPatch(_path, linewidth=1.5, facecolor = color, fill=True, antialiased=True)
         self.ax.add_patch(path_patch)
+    
+
+    # TODO: Implement list cache system
+    def Move_List_Forward():
+        pass
 
     def Draw_Square_With_Text(self, text, i, color):
         x_coordinate = self.x_offset + i * (self.element_width + self.interior_x_padding)
@@ -215,8 +225,32 @@ class Drawing:
     def Step_Array_Down(self, offset_amount=0.0):
         self.offset = self.offset - offset_amount
 
+    # MatPlotLib related functions
     def Show(self):
         plt.show()
 
     def Save(self, name = 'data_structure.png'):
         plt.savefig(str(name), bbox_inches='tight', pad_inches=0.1)
+
+    def Get_Element_Midpoint_By_Index(self, index):
+        return self.x_offset + index * (self.element_width + self.interior_x_padding)
+
+    def Recalculate_Axes_And_Diagram(self):
+        self.axes_aspect_ratio = self.axes_width / self.axes_height
+
+        # Width-based major axis
+        if self.axes_aspect_ratio > 1.0:
+            self.diagram_height = self.diagram_width / self.axes_aspect_ratio
+        # Height-based major axis
+        else:
+            self.diagram_width = self.diagram_height * self.axes_aspect_ratio
+        
+        self.ax.set_xlim(0, self.axes_width)
+        self.ax.set_ylim(0, self.axes_height)
+        # TODO: Find way to update figsize
+    
+    def Scale_Axes_Height_By_Value(self, value):
+        self.axes_height += value
+        self.y_offset += value
+        print(self.y_offset)
+        self.Recalculate_Axes_And_Diagram()
