@@ -73,14 +73,14 @@ class ArrowBase:
         # Converts the string symbolic notation '<->', '<-', '->' into the arrowhead draw subroutine
         if arrowstyle == '<->':
             arrowbody.Shorten(arrowhead_length, arrowhead_length)
-            self.__Draw_Triangle_Arrowhead(ax, self.xf + dx_f, self.yf + dy_f, self.theta_f, self.color, arrowhead_length)
-            self.__Draw_Triangle_Arrowhead(ax, self.x0 + dx_0, self.y0 + dy_0, self.theta_0, self.color, arrowhead_length)
+            self.Draw_Triangle_Arrowhead(ax, self.xf + dx_f, self.yf + dy_f, self.theta_f, self.color, arrowhead_length)
+            self.Draw_Triangle_Arrowhead(ax, self.x0 + dx_0, self.y0 + dy_0, self.theta_0, self.color, arrowhead_length)
         if arrowstyle == '<-':
             arrowbody.Shorten(arrowhead_length, 0)
-            self.__Draw_Triangle_Arrowhead(ax, self.x0 + dx_0, self.y0 + dy_0, self.theta_0, self.color, arrowhead_length)
+            self.Draw_Triangle_Arrowhead(ax, self.x0 + dx_0, self.y0 + dy_0, self.theta_0, self.color, arrowhead_length)
         if arrowstyle == '->':
             arrowbody.Shorten(0, arrowhead_length)
-            self.__Draw_Triangle_Arrowhead(ax, self.xf + dx_f, self.yf + dy_f, self.theta_f, self.color, arrowhead_length)
+            self.Draw_Triangle_Arrowhead(ax, self.xf + dx_f, self.yf + dy_f, self.theta_f, self.color, arrowhead_length)
 
 # Cubic bezier arrow curve
 # Useful for connecting arrows which span the XY plane
