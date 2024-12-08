@@ -1,14 +1,12 @@
 import sys as sys
 import os
 
-### INCLUDE LOCAL PACKAGE DIRECTORIES
+# Starting logic
 cwd = os.getcwd()
-print('Current working directory: ', cwd)
 
 drawing_subdirectory = os.path.join(cwd, 'drawing')
 memory_diagrams_subdirectory = os.path.join(cwd, 'memory_diagrams')
 
-# Should be refactored soon into a single function call
 sys.path.append(drawing_subdirectory)
 sys.path.append(memory_diagrams_subdirectory)
 
@@ -17,20 +15,24 @@ import sparse as sparse
 import memory_diagrams.array as array
 import memory_diagrams.hybrid as hybrid
 
-### BEGIN SCRIPT
-
+# Begin general code tests
 array = array.Array(10)
 array.Add(1)
 array.Add(2)
 array.Add(3)
 array.Add(4)
 array.Add(5)
-array.Add(6)
-
 array.Draw()
 
-# TODO: Fix
-# array.Save(name = 'image_1a.png')
+# Follow the same pattern for other datastructure types:
+
+#sparse_set = sparse.Sparse(10)
+#sparse_set.Add(1)
+#sparse_set.Add(2)
+#sparse_set.Add(5)
+#sparse_set.Draw()
+
+# May not be useful. It was for representing memory state changes, but the documentation will need a different process for rendering graphs.
 
 # timelapse = timelapse.Timelapse(16)
 # timelapse.Draw()

@@ -13,7 +13,6 @@ class Sparse:
 # "PUBLIC" API FUNCTIONS
 
     def Add(self, key):
-        # Bounds checks
         if key <= 0:
             raise AssertionError("key <= 0")
         if key >= self.cap:
@@ -33,32 +32,51 @@ class Sparse:
         print("Dense Set: ", self.D)
 
     def Draw(self):
-        _drawing = drawing.Drawing(diagram_width = 11., diagram_height = 4., show_axes = True, horizontal_elements = self.cap, vertical_elements = 1, lower_padding = 1.0, show_axes_numbers = True)
+        length = 1.0
+        x_padding = 0.1
+        y_padding = 0.1
 
-#        underline_bar_height = 1.0
-#        stride = 2.0
+        # Distance between top and bottom arrays
+        array_separation = 2.0 * length
 
-#        drawing.Scale_Axes_Height_By_Value(underline_bar_height)
-        _drawing.Scale_Axes_Height_By_Value(1.1)
+        # (X,Y) Drawing start coordinates
+        x0 = x_padding
+        y0 = y_padding + length + array_separation
+        y0S = y_padding
 
+        # Adjust plot settings
+        axes_width = self.cap * (length + x_padding) + x_padding 
+        axes_height = array_separation + 2.0 * length + 2.0 * y_padding
+
+        _drawing = drawing.Drawing(diagram_width = 8., diagram_height = 4., show_axes=True)
+        _drawing.Set_Axes_Size(axes_width, axes_height)
+
+        # Draw rectangles for Sparse Set S
         for i, value in enumerate(self.S):
+            sx_center = x0 + length/2. + i * (length + x_padding)
+            sy_top = y0S + length
+
+            dx_center = x0 + length/2. + value * (length + x_padding)
+            dy_bottom = y0
+
             filled_color = 'darkseagreen'
             index_color = 'cadetblue'
 
-            dcolor = 'white'
+            color = 'white'
 
             if i == 0:
-                dcolor = filled_color
+                color = filled_color
             elif value != 0:
-                dcolor = filled_color
+                if value == i:
+                    color = filled_color
+                    _drawing.Draw_Vertical_Arrow(sx_center, sy_top, sx_center, dy_bottom, color)
+                else:
+                    color = index_color
+                    _drawing.Draw_Diagonal_Arrow(sx_center, sy_top, dx_center, dy_bottom, 1.2, color, dashed=True)
             else:
-                dcolor = 'white'
+                color = 'white'
 
-            _drawing.Draw_Square_With_Text(value, i, 0.0, dcolor)
-        
-        #:_drawing.Draw_Underline_Bar_Anchored(1, 5, underline_bar_height, 0.2)
-        #_drawing.Draw_Diagonal_Arrow(3.0, 1.0, 5.0, 2.0, 0.5, 'black')
-
+            _drawing.Draw_Square_With_Text(value, x0 + i * (length + x_padding), y0S, length, color)
 
         # Draw rectangles for Dense Set D
         for i, value in enumerate(self.D):
@@ -76,8 +94,8 @@ class Sparse:
                     dcolor = index_color
             else:
                 dcolor = 'white'
-            _drawing.Draw_Square_With_Text(value, i, 2.0, dcolor)
-            #_drawing.Draw_Vertical_Arrow_Anchored(i, 0.0, 2.0, 'black')
+
+            _drawing.Draw_Square_With_Text(value, x0 + i * (length + x_padding), y0, length, dcolor)
 
         _drawing.Save(name = 'Sparse_Set.png')
         _drawing.Show()

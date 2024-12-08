@@ -4,6 +4,11 @@ import math as math
 
 import drawing as drawing
 
+# A sequence of N array elements
+# The Add(key) function allows unsorted adding of integers
+#
+# The Draw() function handles all the calculations for element distances and geometry
+# Which easily allows a user to generate arrays within the main.py script
 class Array:
     def __init__(self, capacity):
         self.cap = capacity
@@ -49,12 +54,14 @@ class Array:
             else:
                 dcolor = 'white'
 
-            _drawing.Draw_Square_With_Text(value, i, dcolor)
+            _drawing.Draw_Square_With_Text(value, i, 0.0, dcolor)
         
-        # TODO: Test, Fix, Remove
-        _drawing.Draw_Underline_Bar_Floating(1.0, 0.5, stride, underline_bar_height)
+        _drawing.Draw_Underline_Bar_Anchored(1, 5, underline_bar_height, 0.2)
+        _drawing.Draw_Vertical_Arrow(1.0, -1.2, 1.0, 0.0, 'black')
+        #_drawing.Draw_Diagonal_Arrow(3.0, 1.0, 5.0, 2.0, 0.5, 'black')
 
-        #_drawing.Save(name = 'Simple_Array.png')
+
+        _drawing.Save(name = 'Simple_Array.png')
         _drawing.Show()
 
 

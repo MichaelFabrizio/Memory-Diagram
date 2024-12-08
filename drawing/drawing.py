@@ -13,7 +13,14 @@ class Drawing:
                  horizontal_elements = 0, vertical_elements = 0,
                  element_width = 1.0, element_height = 1.0):
 
-        # The diagram image size on paper, in inches.
+        # The user may specify their print size, via diagram_width & diagram_height parameters
+        # The diagram and axes calculations are done automatically,
+        #
+        # The computer prioritizes the mathematical requirement:
+        # 
+        # Aspect Ratio = axes_width / axes_height
+        #
+        # So the diagram may be scaled to match the aspect ratio. This is the default, I suppose it could be a setting/parameter.
         self.diagram_width = diagram_width
         self.diagram_height = diagram_height
 
@@ -40,11 +47,10 @@ class Drawing:
         # The actual plot dimensions required, ie: the XY coordinate ranges that all values are based on.
         self.axes_width = self.left_padding + self.right_padding + float(self.horizontal_elements) * (self.interior_x_padding + self.element_width) - self.interior_x_padding
         self.axes_height = self.lower_padding + self.upper_padding + float(self.vertical_elements) * (self.interior_y_padding + self.element_height) - self.interior_y_padding
-        
+
+        # These are the origin point coordinates that all drawing coordinates are based on.
         self.x_offset = self.left_padding
         self.y_offset = self.axes_height - self.upper_padding - self.element_height
-
-        print(self.y_offset)
 
         # BEGIN: diagram_width / diagram_height scaling logic
         #
@@ -63,31 +69,37 @@ class Drawing:
         # ====================
         # END: diagram_width / diagram_height scaling logic
 
-
         self.fig, self.ax = plt.subplots(figsize=(self.diagram_width, self.diagram_height))
-        # self.ax.set_aspect('equal') # TODO: Double check if necessary
         
         self.ax.set_xlim(0, self.axes_width)
         self.ax.set_ylim(0, self.axes_height)
+
+        # The default values
+        # self.layout = Layout(self.axes_width, self.axes_height)
 
         if show_axes:
             if show_axes_numbers:
                 return
             else:
+                # The graph square is included without numbers
                 self.ax.set_xticks([])
                 self.ax.set_yticks([])
         else:
             self.ax.axis('off')
 
+#    def Draw_Vertical_Arrow_Anchored(self, i, y0, yf, color):
+#        x0 = self.x_offset + i * (self.element_width + self.interior_x_padding)
+#        y0 = self.y_offset - y0
+#        yf = self.y_offset - yf
+#        self.Draw_Vertical_Arrow(x0, y0, x0, yf, color)
 
-    # TODO: Update offsets
     def Draw_Vertical_Arrow(self, x0, y0, xf, yf, color, arrow_side_length = 0.2, dashed = False):
-        arrow = arrows.VerticalArrow(x0, self.offset + y0, xf, self.offset + yf, linestyle = '-')
+        arrow = arrows.VerticalArrow(self.x_offset + x0, self.y_offset + y0, self.x_offset + xf, self.y_offset + yf, linestyle = '-')
         arrow.Draw(self.ax)
 
     # TODO: Update offsets
     def Draw_Diagonal_Arrow(self, x0, y0, xf, yf, interior_padding, color, arrow_side_length = 0.2, dashed = False):
-        arrow = arrows.DiagonalArrow(x0, self.offset + y0, xf, self.offset + yf, linestyle = '-')
+        arrow = arrows.DiagonalArrow(x0, self.y_offset + y0, xf, self.y_offset + yf, linestyle = '-')
         arrow.Draw(self.ax)
 
     # TODO: Update offsets
@@ -146,15 +158,16 @@ class Drawing:
         path_patch = patches.PathPatch(_path, linewidth=1.5, facecolor = color, fill=True, antialiased=True)
         self.ax.add_patch(path_patch)
 
-    def Draw_Underline_Bar_Anchored(self, index_initial, index_final, height):
-        pass
-        
+    def Draw_Underline_Bar_Anchored(self, index_initial, index_final, height, spacer, linewidth = 0.1):
         if index_initial >= index_final:
             raise AssertionError("index_initial >= index_final")
 
         x0 = self.x_offset + index_initial * (self.element_width + self.interior_x_padding)
-        # TODO: xf, y0, yf calculations
-        # TODO: Draw_Underline_Bar_Floating()
+        xf = self.x_offset + index_final * (self.element_width + self.interior_x_padding) - linewidth
+        y0 = self.y_offset - height - spacer
+        yf = self.y_offset
+
+        self.Draw_Underline_Bar_Floating(x0, y0, xf - x0, height, linewidth)
     
     
     def Draw_Underline_Bar_Floating(self, x0, y0, stride, height, linewidth = 0.1, color='red'):
@@ -200,17 +213,12 @@ class Drawing:
         path_patch = patches.PathPatch(_path, linewidth=1.5, facecolor = color, fill=True, antialiased=True)
         self.ax.add_patch(path_patch)
     
-
-    # TODO: Implement list cache system
-    def Move_List_Forward():
-        pass
-
-    def Draw_Square_With_Text(self, text, i, color):
+    def Draw_Square_With_Text(self, text, i, y0, color):
         x_coordinate = self.x_offset + i * (self.element_width + self.interior_x_padding)
         x_coordinate_text = x_coordinate + self.element_width/2.
-        y_coordinate_text = self.y_offset + self.element_height/2.
+        y_coordinate_text = self.y_offset + self.element_height/2. - y0
 
-        rect = patches.Rectangle((x_coordinate, self.y_offset), self.element_width, self.element_height, facecolor=color, edgecolor='black', linewidth=1.5)
+        rect = patches.Rectangle((x_coordinate, self.y_offset - y0), self.element_width, self.element_height, facecolor=color, edgecolor='black', linewidth=1.5)
         self.ax.add_patch(rect)
         self.ax.text(x_coordinate_text, y_coordinate_text, str(text), ha='center', va='center', fontweight='bold')
         
@@ -221,9 +229,9 @@ class Drawing:
             self.ax.add_patch(rect)
             self.ax.text(x0 + length/2. + i * (length + padding), self.offset + y0 + length/2., str(value), ha='center', va='center', fontweight='bold')
 
-    # TODO: Implement stepdown logic
     def Step_Array_Down(self, offset_amount=0.0):
-        self.offset = self.offset - offset_amount
+        self.y_offset = self.y_offset - offset_amount
+        self.Recalculate_Axes_And_Diagram()
 
     # MatPlotLib related functions
     def Show(self):
@@ -235,6 +243,8 @@ class Drawing:
     def Get_Element_Midpoint_By_Index(self, index):
         return self.x_offset + index * (self.element_width + self.interior_x_padding)
 
+    # Calculates the required aspect ratio 2D
+    # Always prioritizes mathematical space over display space
     def Recalculate_Axes_And_Diagram(self):
         self.axes_aspect_ratio = self.axes_width / self.axes_height
 
@@ -247,10 +257,26 @@ class Drawing:
         
         self.ax.set_xlim(0, self.axes_width)
         self.ax.set_ylim(0, self.axes_height)
-        # TODO: Find way to update figsize
-    
+
+        self.fig.set_figwidth(self.diagram_width)
+        self.fig.set_figheight(self.diagram_height)
+
+#        self.layout.Update_Axes(self.axes_width, self.axes_height)
+   
+    # This function allows the user to ask for extra space vertically
     def Scale_Axes_Height_By_Value(self, value):
         self.axes_height += value
         self.y_offset += value
-        print(self.y_offset)
         self.Recalculate_Axes_And_Diagram()
+
+
+    # AXES: 
+
+    def Get_Axes(self):
+        return self.ax
+
+    def Get_Figure(self):
+        return self.fig
+
+    def Get_Y_Offset(self):
+        return self.y_offset
