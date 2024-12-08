@@ -17,7 +17,22 @@ class ArrowBase:
         self.arrowstyle = arrowstyle
         self.linestyle = linestyle
     
-    def __Draw_Triangle_Arrowhead(self, ax, x0, y0, theta, color, side_length = 0.2):
+        # Drawing the arrowhead itself requires trigonometry
+        # The default arrowhead is an equilateral triangle.
+        # It can have any rotation, which is defined by the angle 'theta'
+        # 
+        # Not completely sure that I got these trig rotations right
+        # But any change here will propagate throughout the program
+        #
+        # *Defined in polar coordinates*
+        # abs(r) = sqrt[(xf - x0)^2 + (yf - y0)^2]
+        # 
+        # where point A(x0, y0) corresponds to the base of the arrowhead
+        # and point B(xf, yf) corresponds the the tip of the arrowhead
+        #
+        # The triangle is defined as equilateral
+        # theta corresponds to the directional vector
+    def Draw_Triangle_Arrowhead(self, ax, x0, y0, theta, color, side_length = 0.2):
         arrowhead_length = math.cos(math.radians(30)) * self.arrowhead_size
 
         xf = x0 + arrowhead_length * math.cos(theta)
@@ -42,14 +57,20 @@ class ArrowBase:
     # arrowbody - The curve or line of the arrow. Type arrowbody requires a method Shorten(initial_amount, final_amount, theta_0, theta_f). Theta in radians.
     def Draw(self, ax, arrowbody, arrowstyle):
         # Height delta of a single arrowhead
+        # 30 degrees comes from the half angle of the equilateral triangle (it's a height calculation, tip to tail).
         arrowhead_length = math.cos(math.radians(30)) * self.arrowhead_size
-        
+       
+        # These were chosen as coordinate conventions, actually this code is weak
+        # These control arrow directionality, but the coordinate system choice is probably off
+
+        # The challenge is the __Draw_Triangle_Arrowhead() function,
         dx_0 = - arrowhead_length * math.cos(self.theta_0)
         dy_0 = - arrowhead_length * math.sin(self.theta_0)
         
         dx_f = - arrowhead_length * math.cos(self.theta_f)
         dy_f = - arrowhead_length * math.sin(self.theta_f)
 
+        # Converts the string symbolic notation '<->', '<-', '->' into the arrowhead draw subroutine
         if arrowstyle == '<->':
             arrowbody.Shorten(arrowhead_length, arrowhead_length)
             self.__Draw_Triangle_Arrowhead(ax, self.xf + dx_f, self.yf + dy_f, self.theta_f, self.color, arrowhead_length)
@@ -61,6 +82,8 @@ class ArrowBase:
             arrowbody.Shorten(0, arrowhead_length)
             self.__Draw_Triangle_Arrowhead(ax, self.xf + dx_f, self.yf + dy_f, self.theta_f, self.color, arrowhead_length)
 
+# Cubic bezier arrow curve
+# Useful for connecting arrows which span the XY plane
 class DiagonalArrow(ArrowBase):
     def __init__(self, x0, y0, xf, yf, color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
 
@@ -86,11 +109,17 @@ class DiagonalArrow(ArrowBase):
         super().Draw(ax, self.cubic_bezier, self.arrowstyle)
         self.cubic_bezier.Draw(ax)
 
+# This could be generalized to not be 'just vertical'
+# theta should be the vector direction of the line segment
+
+# Why did I write two thetas... It should be one theta and the system is defined.
+# One line segment:
+# A(x0, y0) -> B(xf, yf)
 class VerticalArrow(ArrowBase):
     def __init__(self, x0, y0, xf, yf, color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
-        # Class defined final direction vectors
-        theta_0 = math.radians(-90.0)
-        theta_f = math.radians(90.0)
+        # Class defined final direction vectors - Helps to determine arrowhead direction
+        theta_0 = math.radians(90.0)
+        theta_f = math.radians(-90.0)
         
         super().__init__(x0, y0, xf, yf, theta_0, theta_f, linestyle = linestyle, arrowstyle = arrowstyle)
 
@@ -100,6 +129,10 @@ class VerticalArrow(ArrowBase):
         super().Draw(ax, self.line, self.arrowstyle)
         self.line.Draw(ax)
 
+# Connect two array elements on the same vertical/horizontal line.
+# The North, South, East, West directionality is only a workaround solution, ideally it would be defined with Polar Coordinates (r, theta)
+# 
+# The two control points would also be theta dependent, I'll try to get a diagram for that.
 class ReconnectingArrow(ArrowBase):
     def __init__(self, x_offset, y_offset, stride, cardinality, height = 1.0, linestyle = '-', arrowstyle = '<->'):
         # Can be generalized for different angles to reduce code bloat
@@ -181,6 +214,9 @@ class ReconnectingArrow(ArrowBase):
         super().Draw(ax, self.cubic_bezier, self.arrowstyle)
         self.cubic_bezier.Draw(ax)
 
+# This arrow is the elbow shape.
+# This one is already defined against theta, so it's mostly complete?
+# However a change of coordinate system might affect the trig calculations
 class CornerArrow(ArrowBase):
     def __init__(self, x_offset, y_offset, radius, theta, linestyle = '-', arrowstyle = '<->'):
         dx0 = - radius * math.sin(theta)

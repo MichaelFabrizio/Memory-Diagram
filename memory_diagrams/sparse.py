@@ -3,15 +3,26 @@ import math as math
 
 import drawing as drawing
 
+# The Sparse class refers to the sparse set datastructure, which is well researched in the Entity-Component-System community.
+# It is a structure of two arrays: one sparse array of data, one dense array of data.
+#
+# I have chosen a different nomenclature to define these arrays (for my work):
+# 
+# Array S: Sparse -> Indices
+# Array D: Dense -> Keys
+#
+# Although, these arrays are merged under the keyvector setup into a single array, Indices.
+# This nomenclature work will be defined in the discussion threads
 class Sparse:
     def __init__(self, capacity):
         self.cap = capacity
         self.len = 1
+
         self.S = np.zeros(capacity, int)
         self.D = np.zeros(capacity, int)
 
-# "PUBLIC" API FUNCTIONS
 
+    # There is an error in the logic here, will have to revisit
     def Add(self, key):
         # Bounds checks
         if key <= 0:

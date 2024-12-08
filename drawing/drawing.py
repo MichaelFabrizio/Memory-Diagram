@@ -87,14 +87,14 @@ class Drawing:
         else:
             self.ax.axis('off')
 
-#    def Draw_Vertical_Arrow_Anchored(self, i, y0, yf, color):
-#        x0 = self.x_offset + i * (self.element_width + self.interior_x_padding)
-#        y0 = self.y_offset - y0
-#        yf = self.y_offset - yf
-#        self.Draw_Vertical_Arrow(x0, y0, x0, yf, color)
+    def Draw_Vertical_Arrow_Anchored(self, i, y0, color, arrowstyle = '<->'):
+        x0 = self.x_offset + i * (self.element_width + self.interior_x_padding) + self.element_width / 2. - self.interior_x_padding
+        y0 = self.y_offset - self. element_height - y0
+        yf = self.y_offset
+        self.Draw_Vertical_Arrow(x0, y0, x0, yf, color, arrowstyle = arrowstyle)
 
-    def Draw_Vertical_Arrow(self, x0, y0, xf, yf, color, arrow_side_length = 0.2, dashed = False):
-        arrow = arrows.VerticalArrow(self.x_offset + x0, self.y_offset + y0, self.x_offset + xf, self.y_offset + yf, linestyle = '-')
+    def Draw_Vertical_Arrow(self, x0, y0, xf, yf, color, arrow_side_length = 0.2, dashed = False, arrowstyle = '<->'):
+        arrow = arrows.VerticalArrow(self.x_offset + x0, self.y_offset - y0, self.x_offset + xf, self.y_offset - yf, linestyle = '-', arrowstyle = arrowstyle)
         arrow.Draw(self.ax)
 
     # TODO: Update offsets
@@ -221,6 +221,9 @@ class Drawing:
         rect = patches.Rectangle((x_coordinate, self.y_offset - y0), self.element_width, self.element_height, facecolor=color, edgecolor='black', linewidth=1.5)
         self.ax.add_patch(rect)
         self.ax.text(x_coordinate_text, y_coordinate_text, str(text), ha='center', va='center', fontweight='bold')
+
+    def Draw_Text(self):
+        pass
         
     # TODO: Update offsets
     def Draw_Array(self, array, x0, y0, padding, length, color):
