@@ -5,6 +5,7 @@ import numpy as np
 import math as math
 
 import arrows.arrows as arrows
+import shapes.triangles as triangles
 
 class Drawing:
     def __init__(self, diagram_width = 20.0, diagram_height = 4.0, show_axes = False, show_axes_numbers = False,
@@ -158,6 +159,10 @@ class Drawing:
         path_patch = patches.PathPatch(_path, linewidth=1.5, facecolor = color, fill=True, antialiased=True)
         self.ax.add_patch(path_patch)
 
+    def Draw_Equilateral_Triangle(self, x0, y0, sidelength, theta, color = 'white'):
+        t = triangles.EquilateralTriangle(self. ax, x0, y0, sidelength, theta, color)
+        t.Draw(self.ax)
+
     def Draw_Underline_Bar_Anchored(self, index_initial, index_final, height, spacer, linewidth = 0.1):
         if index_initial >= index_final:
             raise AssertionError("index_initial >= index_final")
@@ -225,7 +230,7 @@ class Drawing:
     def Draw_Text(self):
         pass
         
-    # TODO: Update offsets
+    # Update offsets
     def Draw_Array(self, array, x0, y0, padding, length, color):
         for i, value in enumerate(array):
             rect = patches.Rectangle((x0 + i * (length + padding), self.offset + y0), length, length, facecolor=color, edgecolor='black', linewidth=1.5)

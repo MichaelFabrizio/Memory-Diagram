@@ -65,6 +65,8 @@ class Array:
         #_drawing.Draw_Vertical_Arrow(1.0, -1.2, 1.0, 0.0, 'black')
         #_drawing.Draw_Diagonal_Arrow(3.0, 1.0, 5.0, 2.0, 0.5, 'black')
 
+        _drawing.Draw_Equilateral_Triangle(1.0, 1.0, 2.0, 0.0, color='red')
+
         _drawing.Save(name = 'Simple_Array.png')
         _drawing.Show()
 
