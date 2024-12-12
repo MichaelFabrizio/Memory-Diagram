@@ -12,7 +12,8 @@ class Drawing:
                  left_padding = 0.1, right_padding = 0.1, lower_padding = 0.1, upper_padding = 0.1,
                  interior_x_padding = 0.1, interior_y_padding = 1.0,
                  horizontal_elements = 0, vertical_elements = 0,
-                 element_width = 1.0, element_height = 1.0):
+                 element_width = 1.0, element_height = 1.0,
+                 axes_auto = True, axes_width = 1.0, axes_height = 1.0):
 
         # The user may specify their print size, via diagram_width & diagram_height parameters
         # The diagram and axes calculations are done automatically,
@@ -45,9 +46,13 @@ class Drawing:
         self.element_width = element_width
         self.element_height = element_height
 
-        # The actual plot dimensions required, ie: the XY coordinate ranges that all values are based on.
-        self.axes_width = self.left_padding + self.right_padding + float(self.horizontal_elements) * (self.interior_x_padding + self.element_width) - self.interior_x_padding
-        self.axes_height = self.lower_padding + self.upper_padding + float(self.vertical_elements) * (self.interior_y_padding + self.element_height) - self.interior_y_padding
+        if axes_auto:
+            # The actual plot dimensions required, ie: the XY coordinate ranges that all values are based on.
+            self.axes_width = self.left_padding + self.right_padding + float(self.horizontal_elements) * (self.interior_x_padding + self.element_width) - self.interior_x_padding
+            self.axes_height = self.lower_padding + self.upper_padding + float(self.vertical_elements) * (self.interior_y_padding + self.element_height) - self.interior_y_padding
+        else:
+            self.axes_width = axes_width
+            self.axes_height = axes_height
 
         # These are the origin point coordinates that all drawing coordinates are based on.
         self.x_offset = self.left_padding

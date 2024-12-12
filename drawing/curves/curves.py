@@ -16,8 +16,6 @@ class Curve:
         self.linestyle = linestyle
 
     def Get_Angle():
-        theta = 90.0
-
         if abs(xf - x0) < 1e-2:
             if yf >= 0.0:
                 return math.radians(90.0)
@@ -78,6 +76,10 @@ class Bezier(Curve):
 class Line(Curve):
     def __init__(self, x0, y0, xf, yf, 
                  theta_0 = 0.0, theta_f = 0.0, linestyle = '-'):
+        
+        #theta_0 =
+        #theta_f =
+
         super().__init__(x0, y0, xf, yf, theta_0, theta_f, linestyle = linestyle)
 
     def Shorten(self, initial, final):
