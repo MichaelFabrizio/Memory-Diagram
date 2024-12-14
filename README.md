@@ -1,5 +1,5 @@
 # Memory-Diagram
 
-A work in progress library for drawing computer memory diagrams.
+A drawing library for creating documentation of memory state changes within an application process. 
 
-![Sparse_Set2](https://github.com/MichaelFabrizio/Python_Scripts/assets/83029804/d4a549b6-da74-496b-bc2d-8f6030c470ff)
+![cubic_bezier_arrows](https://github.com/user-attachments/assets/74293a27-6491-49f1-a2e0-837c1a9202a2)
