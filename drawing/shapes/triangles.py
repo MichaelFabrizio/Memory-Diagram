@@ -26,7 +26,7 @@ class TriangleBase:
 
 class EquilateralTriangle(TriangleBase):
     # This constructor function will calculate the cartesian coordinates from polar
-    def __init__(self, ax, xi, yi, sidelength, theta, color): 
+    def __init__(self, xi, yi, sidelength, theta, color = 'white'): 
 
         radius = sidelength * math.cos(math.radians(30))
 

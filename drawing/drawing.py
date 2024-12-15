@@ -6,6 +6,7 @@ import math as math
 
 import arrows.arrows as arrows
 import shapes.triangles as triangles
+import curves.curves as curves
 
 class Drawing:
     def __init__(self, diagram_width = 20.0, diagram_height = 4.0, show_axes = False, show_axes_numbers = False,
@@ -93,19 +94,27 @@ class Drawing:
         else:
             self.ax.axis('off')
 
-    def Draw_Vertical_Arrow_Anchored(self, i, y0, color, arrowstyle = '<->'):
-        x0 = self.x_offset + i * (self.element_width + self.interior_x_padding) + self.element_width / 2. - self.interior_x_padding
-        y0 = self.y_offset - self. element_height - y0
-        yf = self.y_offset
-        self.Draw_Vertical_Arrow(x0, y0, x0, yf, color, arrowstyle = arrowstyle)
+#    def Draw_Vertical_Arrow_Anchored(self, i, y0, arrowstyle = '<->'):
+#        x0 = self.x_offset + i * (self.element_width + self.interior_x_padding) + self.element_width / 2. - self.interior_x_padding
+#        y0 = self.y_offset - self. element_height + y0
+#        yf = self.y_offset
+#        self.Draw_Vertical_Arrow(x0, y0, x0, yf, arrowstyle = arrowstyle)
 
-    def Draw_Vertical_Arrow(self, x0, y0, xf, yf, color, arrow_side_length = 0.2, dashed = False, arrowstyle = '<->'):
-        arrow = arrows.VerticalArrow(self.x_offset + x0, self.y_offset - y0, self.x_offset + xf, self.y_offset - yf, linestyle = '-', arrowstyle = arrowstyle)
+    def Draw_Arrow(self, x0, y0, xf, yf):
+        arrow = arrows.Arrow(x0, y0, xf, yf)
         arrow.Draw(self.ax)
 
-    # TODO: Update offsets
-    def Draw_Diagonal_Arrow(self, x0, y0, xf, yf, interior_padding, color, arrow_side_length = 0.2, dashed = False):
-        arrow = arrows.DiagonalArrow(x0, self.y_offset + y0, xf, self.y_offset + yf, linestyle = '-')
+    def Draw_Diagonal_Arrow_Anchored(self, i0, iF, y0, arrowstyle = '<->'):
+        x0 = self.x_offset + i0 * (self.element_width + self.interior_x_padding) + self.element_width / 2. - self.interior_x_padding
+        y0 = self.y_offset - self. element_height + y0
+        
+        xf = self.x_offset + iF * (self.element_width + self.interior_x_padding) + self.element_width / 2. - self.interior_x_padding
+        yf = self.y_offset
+
+        self.Draw_Diagonal_Arrow(x0, y0, xf, yf, arrowstyle = arrowstyle)
+
+    def Draw_Diagonal_Arrow(self, x0, y0, xf, yf, arrowstyle = '<->'):
+        arrow = arrows.DiagonalArrow(x0, y0, xf, yf, arrowstyle = arrowstyle)
         arrow.Draw(self.ax)
 
     # TODO: Update offsets
@@ -117,6 +126,10 @@ class Drawing:
     def Draw_Corner_Arrow(self, x, y, radius, theta):
         arrow = arrows.CornerArrow(x, self.offset + y, radius, theta)
         arrow.Draw(self.ax)
+
+    def Draw_Line(self, x0, y0, xf, yf):
+        line = curves.Line(x0, y0, xf, yf)
+        line.Draw(self.ax)
 
     # TODO: Update offsets
     def Draw_Centered_X(self, x_center, y_center, length, color='red', inner_length = 0.2):
@@ -165,7 +178,7 @@ class Drawing:
         self.ax.add_patch(path_patch)
 
     def Draw_Equilateral_Triangle(self, x0, y0, sidelength, theta, color = 'white'):
-        t = triangles.EquilateralTriangle(self. ax, x0, y0, sidelength, theta, color)
+        t = triangles.EquilateralTriangle(x0, y0, sidelength, theta, color)
         t.Draw(self.ax)
 
     def Draw_Underline_Bar_Anchored(self, index_initial, index_final, height, spacer, linewidth = 0.1):
@@ -226,9 +239,9 @@ class Drawing:
     def Draw_Square_With_Text(self, text, i, y0, color):
         x_coordinate = self.x_offset + i * (self.element_width + self.interior_x_padding)
         x_coordinate_text = x_coordinate + self.element_width/2.
-        y_coordinate_text = self.y_offset + self.element_height/2. - y0
+        y_coordinate_text = self.y_offset + self.element_height/2. + y0
 
-        rect = patches.Rectangle((x_coordinate, self.y_offset - y0), self.element_width, self.element_height, facecolor=color, edgecolor='black', linewidth=1.5)
+        rect = patches.Rectangle((x_coordinate, self.y_offset + y0), self.element_width, self.element_height, facecolor=color, edgecolor='black', linewidth=1.5)
         self.ax.add_patch(rect)
         self.ax.text(x_coordinate_text, y_coordinate_text, str(text), ha='center', va='center', fontweight='bold')
 

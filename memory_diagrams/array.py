@@ -14,6 +14,8 @@ class Array:
         self.cap = capacity
         self.len = 1
         self.D = np.zeros(capacity, int) # D is renamable to 'Keys', this is the array we are adding to.
+        
+        self.drawing = drawing.Drawing(diagram_width = 11., diagram_height = 4., show_axes = True, horizontal_elements = self.cap, vertical_elements = 1, lower_padding = 1.0, show_axes_numbers = True)
 
     # Add new unsorted integers to the array structure. Does not check for duplicate keys, although it should.
     def Add(self, key):
@@ -33,7 +35,6 @@ class Array:
 
     def Draw(self):
 
-        _drawing = drawing.Drawing(diagram_width = 11., diagram_height = 4., show_axes = True, horizontal_elements = self.cap, vertical_elements = 1, lower_padding = 1.0, show_axes_numbers = True)
 
         underline_bar_height = 1.0
         stride = 2.0
@@ -57,19 +58,21 @@ class Array:
             else:
                 dcolor = 'white'
 
-            _drawing.Draw_Square_With_Text(value, i, 0.0, dcolor)
+            self.drawing.Draw_Square_With_Text(value, i, 0.0, dcolor)
         
         #_drawing.Draw_Underline_Bar_Anchored(1, 5, underline_bar_height, 0.2)
-        _drawing.Draw_Vertical_Arrow_Anchored(5, 1.0, 'black', arrowstyle = '<-')
+        #_drawing.Draw_Vertical_Arrow_Anchored(5, 1.0, 'black', arrowstyle = '<-')
         
         #_drawing.Draw_Vertical_Arrow(1.0, -1.2, 1.0, 0.0, 'black')
         #_drawing.Draw_Diagonal_Arrow(3.0, 1.0, 5.0, 2.0, 0.5, 'black')
 
-        _drawing.Draw_Equilateral_Triangle(1.0, 1.0, 2.0, 0.0, color='red')
+        #_drawing.Draw_Equilateral_Triangle(1.0, 1.0, 2.0, 0.0, color='red')
 
-        _drawing.Save(name = 'Simple_Array.png')
-        _drawing.Show()
-
+        self.drawing.Save(name = 'Simple_Array.png')
+        self.drawing.Show()
 
     def Save(self, name = 'array.png'):
-        _drawing.Save(name)
+        self.drawing.Save(name)
+
+    def Get_Drawing(self):
+        return self.drawing

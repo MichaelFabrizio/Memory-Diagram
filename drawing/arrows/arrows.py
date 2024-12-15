@@ -2,132 +2,71 @@ import matplotlib.patches as patches
 import matplotlib.path as path
 import math as math
 import curves.curves as curves
+import shapes.triangles as triangles
 import numpy as np
 
 class ArrowBase:
-    def __init__(self, x0, y0, xf, yf, theta_0 = 0.0, theta_f = 0.0, color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
+    def __init__(self, x0, y0, xf, yf, curve, arrowstyle = '<->'):
         self.x0 = x0
         self.y0 = y0
         self.xf = xf
         self.yf = yf
-        self.theta_0 = theta_0
-        self.theta_f = theta_f
-        self.color = color
-        self.arrowhead_size = arrowhead_size
+        self.curve = curve
         self.arrowstyle = arrowstyle
-        self.linestyle = linestyle
-    
-        # Drawing the arrowhead itself requires trigonometry
-        # The default arrowhead is an equilateral triangle.
-        # It can have any rotation, which is defined by the angle 'theta'
-        # 
-        # Not completely sure that I got these trig rotations right
-        # But any change here will propagate throughout the program
-        #
-        # *Defined in polar coordinates*
-        # abs(r) = sqrt[(xf - x0)^2 + (yf - y0)^2]
-        # 
-        # where point A(x0, y0) corresponds to the base of the arrowhead
-        # and point B(xf, yf) corresponds the the tip of the arrowhead
-        #
-        # The triangle is defined as equilateral
-        # theta corresponds to the directional vector
-    def Draw_Triangle_Arrowhead(self, ax, x0, y0, theta, color, side_length = 0.2):
-        arrowhead_length = math.cos(math.radians(30)) * self.arrowhead_size
+        self.arrowhead_sidelength = 0.2 # Default for now
+        self.arrowhead_height = self.arrowhead_sidelength * math.cos(math.radians(30.0))
 
-        xf = x0 + arrowhead_length * math.cos(theta)
-        yf = y0 + arrowhead_length * math.sin(theta)
+        if self.arrowstyle == '<->':
+            self.curve.Shorten(self.arrowhead_height, self.arrowhead_height)
+        if self.arrowstyle == '<-':
+            self.curve.Shorten(self.arrowhead_height, 0.0)
+        if self.arrowstyle == '->':
+            self.curve.Shorten(0.0, self.arrowhead_height)
 
-        # Calculate arrowhead vertices using trig
-        vertices = np.array([(x0, y0),                                                                                  # v0
-                             (x0 + side_length/2. * math.sin(theta), y0 - side_length/2. * math.cos(theta)),            # v1
-                             (xf, yf), (x0 - side_length/2. * math.sin(theta), y0 + side_length/2. * math.cos(theta)),  # v2
-                             (x0, y0)])                                                                                 # v3
-
-        # MatPlotLib "Path codes" to define straight lines
-        codes = np.array([1, 2, 2, 2, 2])
-        _path = path.Path(vertices, codes)
-
-        # Create arrowhead patch
-        path_patch = patches.PathPatch(_path, linewidth=1.5, facecolor = color, antialiased=True)
-        ax.add_patch(path_patch)
-
-    # PARAMETERS:
-    # ax - A matplotlib ax which is passed by the Drawing class.
-    # arrowbody - The curve or line of the arrow. Type arrowbody requires a method Shorten(initial_amount, final_amount, theta_0, theta_f). Theta in radians.
-    def Draw(self, ax, arrowbody, arrowstyle):
-        # Height delta of a single arrowhead
-        # 30 degrees comes from the half angle of the equilateral triangle (it's a height calculation, tip to tail).
-        arrowhead_length = math.cos(math.radians(30)) * self.arrowhead_size
-       
-        # These were chosen as coordinate conventions, actually this code is weak
-        # These control arrow directionality, but the coordinate system choice is probably off
-
-        # The challenge is the __Draw_Triangle_Arrowhead() function,
-        dx_0 = - arrowhead_length * math.cos(self.theta_0)
-        dy_0 = - arrowhead_length * math.sin(self.theta_0)
+        theta_f = self.curve.Get_Theta() # In radians
         
-        dx_f = - arrowhead_length * math.cos(self.theta_f)
-        dy_f = - arrowhead_length * math.sin(self.theta_f)
+        x0 = self.curve.Get_X0()
+        y0 = self.curve.Get_Y0()
+        
+        xf = self.curve.Get_XF()
+        yf = self.curve.Get_YF()
 
-        # Converts the string symbolic notation '<->', '<-', '->' into the arrowhead draw subroutine
-        if arrowstyle == '<->':
-            arrowbody.Shorten(arrowhead_length, arrowhead_length)
-            self.Draw_Triangle_Arrowhead(ax, self.xf + dx_f, self.yf + dy_f, self.theta_f, self.color, arrowhead_length)
-            self.Draw_Triangle_Arrowhead(ax, self.x0 + dx_0, self.y0 + dy_0, self.theta_0, self.color, arrowhead_length)
-        if arrowstyle == '<-':
-            arrowbody.Shorten(arrowhead_length, 0)
-            self.Draw_Triangle_Arrowhead(ax, self.x0 + dx_0, self.y0 + dy_0, self.theta_0, self.color, arrowhead_length)
-        if arrowstyle == '->':
-            arrowbody.Shorten(0, arrowhead_length)
-            self.Draw_Triangle_Arrowhead(ax, self.xf + dx_f, self.yf + dy_f, self.theta_f, self.color, arrowhead_length)
+        if self.arrowstyle == '<->':
+            self.first_triangle = triangles.EquilateralTriangle(x0, y0, self.arrowhead_sidelength, math.radians(180) + theta_f)
+            self.second_triangle = triangles.EquilateralTriangle(xf, yf, self.arrowhead_sidelength, theta_f)
+        if self.arrowstyle == '<-':
+            self.first_triangle = triangles.EquilateralTriangle(x0, y0, self.arrowhead_sidelength, math.radians(180) + theta_f)
+        if self.arrowstyle == '->':
+            self.second_triangle = triangles.EquilateralTriangle(xf, yf, self.arrowhead_sidelength, theta_f)
 
-# Cubic bezier arrow curve
-# Useful for connecting arrows which span the XY plane
+    def Draw(self, ax):
+        if self.arrowstyle == '<->':
+            self.curve.Draw(ax)
+            self.first_triangle.Draw(ax)
+            self.second_triangle.Draw(ax)
+        if self.arrowstyle == '<-':
+            self.curve.Draw(ax)
+            self.first_triangle.Draw(ax)
+        if self.arrowstyle == '->':
+            self.curve.Draw(ax)
+            self.second_triangle.Draw(ax)
+
+class Arrow(ArrowBase):
+    def __init__(self, x0, y0, xf, yf, arrowstyle = '<->'):
+        line = curves.Line(x0, y0, xf, yf)
+        super().__init__(x0, y0, xf, yf, line, arrowstyle = arrowstyle)
+
+    def Draw(self, ax):
+        super().Draw(ax)
+
 class DiagonalArrow(ArrowBase):
-    def __init__(self, x0, y0, xf, yf, color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
-
-        # Class defined final direction vectors
-        theta_0 = math.radians(-90.0)
-        theta_f = math.radians(90.0)
-
-        super().__init__(x0, y0, xf, yf, theta_0, theta_f, linestyle = linestyle, arrowstyle = arrowstyle)
-
-        # Calculate control points
-        control_point_1x = x0;
-        control_point_1y = y0 + 1.0; # Curve-strength = 1.0
-        control_point_2x = xf;
-        control_point_2y = yf - 1.0;
-
-        # Generate cubic bezier's shape in constructor
-        self.cubic_bezier = curves.Bezier(x0, y0, xf, yf, 
-                                          control_point_1x, control_point_1y, control_point_2x, control_point_2y,
-                                          theta_0, theta_f,
-                                          linestyle = linestyle)
+    def __init__(self, x0, y0, xf, yf, arrowstyle = '<->'):
+        bezier = curves.Bezier(x0, y0, xf, yf)
+        super().__init__(x0, y0, xf, yf, bezier, arrowstyle = arrowstyle)
 
     def Draw(self, ax):
-        super().Draw(ax, self.cubic_bezier, self.arrowstyle)
-        self.cubic_bezier.Draw(ax)
+        super().Draw(ax)
 
-# This could be generalized to not be 'just vertical'
-# theta should be the vector direction of the line segment
-
-# Why did I write two thetas... It should be one theta and the system is defined.
-# One line segment:
-# A(x0, y0) -> B(xf, yf)
-class VerticalArrow(ArrowBase):
-    def __init__(self, x0, y0, xf, yf, color = 'white', arrowhead_size = 0.2, linestyle = '-', arrowstyle = '<->'):
-        # Class defined final direction vectors - Helps to determine arrowhead direction
-        theta_0 = math.radians(90.0)
-        theta_f = math.radians(-90.0)
-        
-        super().__init__(x0, y0, xf, yf, theta_0, theta_f, linestyle = linestyle, arrowstyle = arrowstyle)
-
-        
-        self.line = curves.Line(x0, y0, xf, yf, theta_0, theta_f, linestyle = linestyle)
-    def Draw(self, ax):
-        super().Draw(ax, self.line, self.arrowstyle)
-        self.line.Draw(ax)
 
 # Connect two array elements on the same vertical/horizontal line.
 # The North, South, East, West directionality is only a workaround solution, ideally it would be defined with Polar Coordinates (r, theta)
