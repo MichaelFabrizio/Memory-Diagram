@@ -4,9 +4,9 @@ import matplotlib.path as path
 import numpy as np
 import math as math
 
-import arrows.arrows as arrows
-import shapes.triangles as triangles
-import curves.curves as curves
+import drawing.arrows.arrows as arrows
+import drawing.shapes.triangles as triangles
+import drawing.curves.curves as curves
 
 class Drawing:
     def __init__(self, diagram_width = 20.0, diagram_height = 4.0, show_axes = False, show_axes_numbers = False,
@@ -94,21 +94,28 @@ class Drawing:
         else:
             self.ax.axis('off')
 
-#    def Draw_Vertical_Arrow_Anchored(self, i, y0, arrowstyle = '<->'):
-#        x0 = self.x_offset + i * (self.element_width + self.interior_x_padding) + self.element_width / 2. - self.interior_x_padding
-#        y0 = self.y_offset - self. element_height + y0
-#        yf = self.y_offset
-#        self.Draw_Vertical_Arrow(x0, y0, x0, yf, arrowstyle = arrowstyle)
+    def Draw_Vertical_Arrow_Anchored(self, i, spacer, height, arrowstyle = '<->', position = 'below'):
+        if position == 'below':
+            x0 = self.x_offset + i * (self.element_width + self.interior_x_padding) + self.element_width / 2.
+            y0 = self.y_offset - spacer - height
+            yf = self.y_offset - spacer
+            self.Draw_Arrow(x0, y0, x0, yf, arrowstyle = arrowstyle)
 
-    def Draw_Arrow(self, x0, y0, xf, yf):
-        arrow = arrows.Arrow(x0, y0, xf, yf)
+        if position == 'above':
+            x0 = self.x_offset + i * (self.element_width + self.interior_x_padding) + self.element_width / 2.
+            y0 = self.y_offset + self.element_height + spacer + height
+            yf = self.y_offset + self.element_height + spacer
+            self.Draw_Arrow(x0, y0, x0, yf, arrowstyle = arrowstyle)
+
+    def Draw_Arrow(self, x0, y0, xf, yf, arrowstyle = '<->'):
+        arrow = arrows.Arrow(x0, y0, xf, yf, arrowstyle = arrowstyle)
         arrow.Draw(self.ax)
 
     def Draw_Diagonal_Arrow_Anchored(self, i0, iF, y0, arrowstyle = '<->'):
-        x0 = self.x_offset + i0 * (self.element_width + self.interior_x_padding) + self.element_width / 2. - self.interior_x_padding
+        x0 = self.x_offset + i0 * (self.element_width + self.interior_x_padding) + self.element_width / 2.
         y0 = self.y_offset - self. element_height + y0
         
-        xf = self.x_offset + iF * (self.element_width + self.interior_x_padding) + self.element_width / 2. - self.interior_x_padding
+        xf = self.x_offset + iF * (self.element_width + self.interior_x_padding) + self.element_width / 2.
         yf = self.y_offset
 
         self.Draw_Diagonal_Arrow(x0, y0, xf, yf, arrowstyle = arrowstyle)

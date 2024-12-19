@@ -1,9 +1,10 @@
 import matplotlib.patches as patches
 import matplotlib.path as path
 import math as math
-import curves.curves as curves
-import shapes.triangles as triangles
 import numpy as np
+
+import drawing.curves.curves as curves
+import drawing.shapes.triangles as triangles
 
 class ArrowBase:
     def __init__(self, x0, y0, xf, yf, curve, arrowstyle = '<->'):

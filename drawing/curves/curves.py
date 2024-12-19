@@ -31,7 +31,10 @@ class Line(Curve):
     def __init__(self, x0, y0, xf, yf):
         # Divide by zero condition
         if abs(xf - x0) < 0.01:
-            theta = math.radians(90.0)
+            if (yf - y0) >= 0.0:
+                theta = math.radians(90.0)
+            else:
+                theta = math.radians(-90.0)
 
         # Auto calculate theta for a default line
         elif (xf - x0) > 0.0:
