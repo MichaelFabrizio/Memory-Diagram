@@ -54,12 +54,12 @@ class Array:
                 dcolor = 'white'
 
             self.drawing.Draw_Square_With_Text(value, i, 0.0, dcolor)
-        
-        self.drawing.Save(name = 'Simple_Array.png')
-        self.drawing.Show()
 
     def Save(self, name = 'array.png'):
         self.drawing.Save(name)
+
+    def Show(self):
+        self.drawing.Show()
 
     def Get_Drawing(self):
         return self.drawing

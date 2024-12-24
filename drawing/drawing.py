@@ -138,7 +138,13 @@ class Drawing:
         line = curves.Line(x0, y0, xf, yf)
         line.Draw(self.ax)
 
-    # TODO: Update offsets
+    def Draw_Centered_X_Anchored(self, i, color='red', inner_length = 0.2):
+        x_center = self.left_padding + i * (self.element_width + self.interior_x_padding) + self.element_width / 2.
+        y_center = self.y_offset + self.element_height / 2.
+        length = self.element_width
+
+        self.Draw_Centered_X(x_center, y_center, length)
+
     def Draw_Centered_X(self, x_center, y_center, length, color='red', inner_length = 0.2):
         half_length = length/2.
         length_diff = half_length - inner_length
