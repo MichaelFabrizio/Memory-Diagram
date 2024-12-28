@@ -124,9 +124,8 @@ class Drawing:
         arrow = arrows.DiagonalArrow(x0, y0, xf, yf, arrowstyle = arrowstyle)
         arrow.Draw(self.ax)
 
-    # TODO: Update offsets
-    def Draw_Reconnecting_Arrow(self, x_offset, y_offset, stride, cardinality = 'north', height = 1.0, linestyle = '-', arrowstyle = '<->'):
-        arrow = arrows.ReconnectingArrow(x_offset, self.offset + y_offset, stride, cardinality, height = 1.0, linestyle = '-', arrowstyle = '<->')
+    def Draw_Reconnecting_Arrow(self, x0, y0, stride, theta = 0.0, height = 1.0, arrowstyle = '<->'):
+        arrow = arrows.ReconnectingArrow(x0, y0, stride, theta = theta, height = height, arrowstyle = '<->')
         arrow.Draw(self.ax)
 
     # TODO: Update offsets
