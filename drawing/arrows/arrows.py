@@ -24,8 +24,10 @@ class ArrowBase:
         if self.arrowstyle == '->':
             self.curve.Shorten(0.0, self.arrowhead_height)
 
-        theta_f = self.curve.Get_Theta() # In radians
+        theta_0 = self.curve.Get_Theta_0() # In radians
+        theta_f = self.curve.Get_Theta_F() # In radians
         
+        # These coordinates are needed to place the arrowhead
         x0 = self.curve.Get_X0()
         y0 = self.curve.Get_Y0()
         
@@ -33,10 +35,10 @@ class ArrowBase:
         yf = self.curve.Get_YF()
 
         if self.arrowstyle == '<->':
-            self.first_triangle = triangles.EquilateralTriangle(x0, y0, self.arrowhead_sidelength, math.radians(180) + theta_f)
+            self.first_triangle = triangles.EquilateralTriangle(x0, y0, self.arrowhead_sidelength, theta_0)
             self.second_triangle = triangles.EquilateralTriangle(xf, yf, self.arrowhead_sidelength, theta_f)
         if self.arrowstyle == '<-':
-            self.first_triangle = triangles.EquilateralTriangle(x0, y0, self.arrowhead_sidelength, math.radians(180) + theta_f)
+            self.first_triangle = triangles.EquilateralTriangle(x0, y0, self.arrowhead_sidelength, theta_0)
         if self.arrowstyle == '->':
             self.second_triangle = triangles.EquilateralTriangle(xf, yf, self.arrowhead_sidelength, theta_f)
 
@@ -61,8 +63,20 @@ class Arrow(ArrowBase):
         super().Draw(ax)
 
 class DiagonalArrow(ArrowBase):
-    def __init__(self, x0, y0, xf, yf, arrowstyle = '<->'):
-        bezier = curves.Bezier(x0, y0, xf, yf)
+    def __init__(self, x0, y0, xf, yf, curve_strength = 0.8, arrowstyle = '<->'):
+        control_point_1x = x0
+        control_point_1y = y0 + (yf - y0) * curve_strength
+        control_point_2x = xf
+        control_point_2y = y0 + (yf - y0) * (1.0 - curve_strength)
+        
+        if (yf - y0) >= 0.0:
+            theta_f = math.radians(90.0)
+        else:
+            theta_f = math.radians(-90.0)
+
+        theta_0 = theta_f + math.radians(180)
+
+        bezier = curves.Bezier(x0, y0, xf, yf, control_point_1x, control_point_1y, control_point_2x, control_point_2y, theta_0 = theta_0, theta_f = theta_f)
         super().__init__(x0, y0, xf, yf, bezier, arrowstyle = arrowstyle)
 
     def Draw(self, ax):
