@@ -124,8 +124,21 @@ class Drawing:
         arrow = arrows.DiagonalArrow(x0, y0, xf, yf, arrowstyle = arrowstyle)
         arrow.Draw(self.ax)
 
+    def Draw_Reconnecting_Arrow_Anchored(self, i0, iF, position = 'above', arrowstyle = '<->'):
+        if position == 'above':
+            theta = - math.pi /2.
+        else:
+            pass
+
+        x0 = self.x_offset + i0 * (self.element_width + self.interior_x_padding) + self.element_width / 2.
+        y0 =  self.y_offset + self.element_height       
+        xf = self.x_offset + iF * (self.element_width + self.interior_x_padding) + self.element_width / 2.
+
+        stride = abs(xf - x0)
+        self.Draw_Reconnecting_Arrow(x0, y0, stride, theta = theta, arrowstyle = arrowstyle)
+
     def Draw_Reconnecting_Arrow(self, x0, y0, stride, theta = 0.0, height = 1.0, arrowstyle = '<->'):
-        arrow = arrows.ReconnectingArrow(x0, y0, stride, theta = theta, height = height, arrowstyle = '<->')
+        arrow = arrows.ReconnectingArrow(x0, y0, stride, theta = theta, height = height, arrowstyle = arrowstyle)
         arrow.Draw(self.ax)
 
     # TODO: Update offsets
